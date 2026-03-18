@@ -100,7 +100,9 @@ export async function login(req, res) {
         success: true,
         user: {
             id: user.id,
+            email: user.email,
             user: user.username,
+
         }
     })
 }
@@ -112,7 +114,7 @@ export async function login(req, res) {
  */
 
 export async function getme(req, res) {
-    const { id, username } = req.username
+    const id = req.user.id
     const user = await userModel.findById(id);
     res.status(200).json({
         message: "User fetched successfully",

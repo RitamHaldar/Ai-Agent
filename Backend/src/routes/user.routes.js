@@ -12,10 +12,10 @@ const authroute = express.Router();
 authroute.post("/register", registerValidator, register);
 /**
  * @description login user
- * @route GET /api/auth/login
+ * @route POST /api/auth/login
  * @access public
  */
-authroute.get("/login", loginValidator, login);
+authroute.post("/login", loginValidator, login);
 
 /**
  * @description get me
