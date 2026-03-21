@@ -13,8 +13,10 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@imagekit/nodejs": "^7.3.0",
     "@langchain/google-genai": "^2.1.25",
     "@langchain/mistralai": "^1.0.7",
+    "@tavily/core": "^0.7.2",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -24,7 +26,9 @@
     "jsonwebtoken": "^9.0.3",
     "langchain": "^1.2.32",
     "mongoose": "^9.3.0",
+    "multer": "^2.1.1",
     "nodemailer": "^8.0.2",
+    "pdf-parse": "^2.4.5",
     "socket.io": "^4.8.3"
   }
 }

@@ -1,10 +1,27 @@
 import { chatModel } from "../models/chat.model.js"
-import { messagesModel } from "../models/messages.model.js"
+import { messageModel } from "../models/messages.model.js"
 import { generateResponse, generateTitle } from "../services/ai.service.js"
+import { uploadPDF } from "../services/pdfupload.service.js"
+import { readPDF } from "../services/pdfreading.service.js"
+
+/**
+ * @description Chat Controller
+ * @route POST /api/chat
+ * @access Private
+ */
 
 export async function chatController(req, res) {
-    const { message, chatId } = req.body
-    let chat = null, title = null
+    const { message, chatId } = req.body;
+    const file = req.file ? req.file : null;
+    let chat = null, title = null, pdfcontent = null;
+    if (file) {
+        try {
+            const pdfurl = await uploadPDF(file);
+            pdfcontent = await readPDF(pdfurl);
+        } catch (error) {
+            console.log(error)
+        }
+    }
     if (!chatId) {
         title = await generateTitle(message)
         chat = await chatModel.create({
@@ -12,15 +29,18 @@ export async function chatController(req, res) {
             title
         })
     }
-    const response = await generateResponse(message)
-    const userMessage = await messagesModel.create({
+    const userMessage = await messageModel.create({
         chat: chatId || chat._id,
-        sender: "user",
-        content: message
+        role: "user",
+        content: pdfcontent ? message + "\n\n" + pdfcontent : message
     })
-    const aiMessage = await messagesModel.create({
+    const messages = await messageModel.find({
+        chat: chatId || chat._id
+    })
+    const response = await generateResponse(messages)
+    const aiMessage = await messageModel.create({
         chat: chatId || chat._id,
-        sender: "ai",
+        role: "ai",
         content: response
     })
     res.status(200).json({
@@ -28,5 +48,58 @@ export async function chatController(req, res) {
         success: true,
         title,
         aiMessage
+    })
+}
+
+/**
+ * @description Get Chats Controller
+ * @route GET /api/chat
+ * @access Private
+ */
+
+export async function getChatsController(req, res) {
+    const chats = await chatModel.find({
+        user: req.user.id
+    })
+    res.status(200).json({
+        message: "Chats fetched successfully",
+        success: true,
+        chats
+    })
+}
+
+/**
+ * @description Get Messages Controller
+ * @route GET /api/chat/messages
+ * @access Private
+ */
+
+export async function getMessagesController(req, res) {
+    const { chatId } = req.body
+    const messages = await messageModel.find({
+        chat: chatId
+    })
+    res.status(200).json({
+        message: "Messages fetched successfully",
+        success: true,
+        messages
+    })
+}
+
+/**
+ * @description Delete Chat Controller
+ * @route DELETE /api/chat
+ * @access Private
+ */
+
+export async function deleteChatController(req, res) {
+    const { chatId } = req.body
+    await chatModel.findByIdAndDelete(chatId)
+    await messageModel.deleteMany({
+        chat: chatId
+    })
+    res.status(200).json({
+        message: "Chat deleted successfully",
+        success: true
     })
 }

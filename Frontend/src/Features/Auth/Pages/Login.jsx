@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Zap, Mail, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../Hooks/useAuth';
 import { useSelector } from 'react-redux';
@@ -25,10 +26,7 @@ const Login = () => {
                 {/* Left Side */}
                 <div className="flex flex-col justify-center space-y-8 pr-0 md:pr-10">
                     <div className="bg-[#25B9CB] w-12 h-12 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(37,185,203,0.5)]">
-                        {/* Lightning Icon */}
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
+                        <Zap className="w-6 h-6 text-white" />
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-bold leading-tight">
@@ -59,15 +57,20 @@ const Login = () => {
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div>
                                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="name@company.com"
-                                    className="w-full bg-[#181A25] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#25B9CB] transition-colors"
-                                    required
-                                />
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <Mail className="w-5 h-5 text-gray-500 focus-within:text-[#25B9CB]" />
+                                    </span>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="name@company.com"
+                                        className="w-full bg-[#181A25] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#25B9CB] transition-colors"
+                                        required
+                                    />
+                                </div>
                             </div>
 
                             <div>
@@ -75,15 +78,20 @@ const Login = () => {
                                     <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Password</label>
                                     <a href="#" className="text-xs text-[#25B9CB] hover:underline">Forgot password?</a>
                                 </div>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    className="w-full bg-[#181A25] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#25B9CB] transition-colors"
-                                    required
-                                />
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <Lock className="w-5 h-5 text-gray-500 focus-within:text-[#25B9CB]" />
+                                    </span>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        className="w-full bg-[#181A25] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#25B9CB] transition-colors"
+                                        required
+                                    />
+                                </div>
                             </div>
 
                             <button

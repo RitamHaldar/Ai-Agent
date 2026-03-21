@@ -1,0 +1,12 @@
+import { tavily } from "@tavily/core"
+
+const tvly = new tavily({
+    apiKey: process.env.TAVILY_API_KEY
+})
+
+export async function webSearch(query) {
+    const response = await tvly.search(query, {
+        max_results: 5
+    })
+    return `Here are the search results go through them thoroughly and answer the question correctly: ${JSON.stringify(response.results)}`
+}

@@ -1,7 +1,9 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import authroute from "./routes/user.routes.js"
+import chatroute from "./routes/chats.routes.js"
 import cors from "cors"
+
 const app = express();
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
@@ -10,5 +12,11 @@ app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
 }))
-app.use("/api/auth", authroute)
+
+/**
+ * @description Routes
+ */
+app.use("/api/auth", authroute);
+app.use("/api/chat", chatroute);
+
 export default app;
