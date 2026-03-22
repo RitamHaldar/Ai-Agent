@@ -45,6 +45,7 @@ export async function chatController(req, res) {
     })
     res.status(200).json({
         message: "Chat created successfully",
+        chatId: chatId || chat._id,
         success: true,
         title,
         aiMessage
@@ -60,7 +61,7 @@ export async function chatController(req, res) {
 export async function getChatsController(req, res) {
     const chats = await chatModel.find({
         user: req.user.id
-    })
+    }).sort({ createdAt: -1 })
     res.status(200).json({
         message: "Chats fetched successfully",
         success: true,
@@ -70,12 +71,12 @@ export async function getChatsController(req, res) {
 
 /**
  * @description Get Messages Controller
- * @route GET /api/chat/messages
+ * @route GET /api/chat/:chatId/messages
  * @access Private
  */
 
 export async function getMessagesController(req, res) {
-    const { chatId } = req.body
+    const { chatId } = req.params
     const messages = await messageModel.find({
         chat: chatId
     })
@@ -93,7 +94,7 @@ export async function getMessagesController(req, res) {
  */
 
 export async function deleteChatController(req, res) {
-    const { chatId } = req.body
+    const { chatId } = req.params
     await chatModel.findByIdAndDelete(chatId)
     await messageModel.deleteMany({
         chat: chatId

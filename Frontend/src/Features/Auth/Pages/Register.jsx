@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Zap, Mail, Lock, User } from 'lucide-react';
+import { useState } from 'react';
+import { Zap, Mail, Lock, User, Eye, EyeOff, Sparkles, Shield, Cpu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../Hooks/useAuth';
 import { useSelector } from 'react-redux';
@@ -7,120 +7,134 @@ const Register = () => {
     const [username, setusername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { handleregister } = useAuth()
-    const navigate = useNavigate()
+    const [visible, setvisible] = useState(false);
+    const { handleregister, handlegetme } = useAuth();
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         await handleregister({ username, email, password });
         setusername('');
         setEmail('');
         setPassword('');
-        navigate('/')
+        navigate('/');
+
     };
-    const user = useSelector(state => state.auth.user)
+    try {
+        handlegetme();
+    }
+    catch (error) {
+        console.log(error);
+    }
+    const user = useSelector(state => state.auth.user);
     if (user) {
-        navigate('/')
+        navigate('/');
     }
     return (
-        <div className="min-h-screen bg-[#0E0F15] text-white flex justify-center items-center p-4">
-            <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10">
-                {/* Left Side */}
-                <div className="flex flex-col justify-center space-y-8 pr-0 md:pr-10">
-                    <div className="bg-[#25B9CB] w-12 h-12 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(37,185,203,0.5)]">
-                        <Zap className="w-6 h-6 text-white" />
+        <div className="min-h-screen bg-[#030305] text-white flex justify-center items-center p-4 md:p-8 relative overflow-hidden font-sans">
+            <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-white/10 mix-blend-screen blur-[120px] animate-[pulse_8s_ease-in-out_infinite]"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-white/5 mix-blend-screen blur-[120px] animate-[pulse_10s_ease-in-out_infinite_reverse]"></div>
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4wNSkiLz48L3N2Zz4=')] opacity-50"></div>
+            <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 relative z-10 items-center">
+                <div className="flex flex-col justify-center space-y-10 pr-0 lg:pr-10 relative z-10 order-2 lg:order-1 hidden md:flex">
+                    <div className="inline-flex items-center space-x-3 mb-2 animate-[fadeIn_1s_ease-out]">
+                        <div className="bg-gradient-to-tr from-white via-gray-100 to-gray-300 w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)] backdrop-blur-sm border border-white/10">
+                            <Zap className="w-6 h-6 text-black" />
+                        </div>
+                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 tracking-wide">Axion AI</span>
                     </div>
-
-                    <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-                        Unleash the Power of <br />
-                        <span className="text-[#25B9CB]">SentinelAI</span>
+                    <h1 className="text-4xl lg:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-200 to-gray-500 leading-[1.15]">
+                        Unleash the <br /> Power of <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">Agents</span>
                     </h1>
-
-                    <p className="text-gray-400 text-lg max-w-md">
-                        Join thousands of developers building the next generation of intelligent agents. Scale your workflows with ease.
+                    <p className="text-gray-400 text-lg md:text-xl max-w-lg leading-relaxed font-light">
+                        Join the ecosystem of the future. Build, deploy, and scale intelligent AI agents with unparalleled precision and security.
                     </p>
-
-                    <div className="relative w-64 h-64 mt-10 hidden md:flex items-center justify-center">
-                        <div className="absolute inset-0 border border-[#25B9CB] rounded-full animate-pulse opacity-10"></div>
-                        <div className="absolute inset-4 border border-[#25B9CB] rounded-full animate-pulse opacity-20"></div>
-                        <div className="absolute inset-8 border border-[#25B9CB] rounded-full animate-[pulse_3s_ease-in-out_infinite] opacity-40"></div>
-                        <svg className="w-16 h-16 text-[#25B9CB] relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                    </div>
                 </div>
-
-                {/* Right Side - Form */}
-                <div className="flex flex-col justify-center">
-                    <div className="bg-[#12141D] border border-gray-800 rounded-xl p-8 shadow-2xl">
-                        <h2 className="text-2xl font-bold mb-2">Create Account</h2>
-                        <p className="text-gray-400 mb-8 text-sm">Start building your AI workforce today.</p>
-
+                <div className="flex flex-col justify-center relative z-10 w-full max-w-md mx-auto lg:max-w-lg order-1 lg:order-2">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-b from-white/5 to-transparent blur-[100px] rounded-full pointer-events-none"></div>
+                    <div className="relative bg-[#0b0c10]/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 sm:p-12 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] hover:border-white/20 transition-colors duration-500">
+                        <div className="lg:hidden flex items-center justify-center space-x-2 mb-8">
+                            <div className="bg-gradient-to-tr from-white via-gray-100 to-gray-300 w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                                <Zap className="w-5 h-5 text-black" />
+                            </div>
+                            <span className="text-xl font-bold text-white tracking-wide">Axion AI</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-white tracking-tight">Create Account</h2>
+                        <p className="text-gray-400 mb-8 text-sm font-medium">Start building your AI workforce today.</p>
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
-                                <div className="relative">
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <User className="w-5 h-5 text-gray-500 focus-within:text-[#25B9CB]" />
+                            <div className="space-y-2">
+                                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Full Name</label>
+                                <div className="relative group">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 transition-transform group-focus-within:scale-110 duration-300">
+                                        <User className="w-5 h-5 text-gray-500 group-focus-within:text-white transition-colors" />
                                     </span>
                                     <input
                                         type="text"
                                         name="fullName"
                                         value={username}
                                         onChange={(e) => setusername(e.target.value)}
-                                        placeholder="John Doe"
-                                        className="w-full bg-[#181A25] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#25B9CB] transition-colors"
+                                        placeholder="username"
+                                        className="w-full bg-white/[0.02] border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] focus:ring-1 focus:ring-white/50 transition-all duration-300 shadow-inner"
                                         required
                                     />
                                 </div>
                             </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
-                                <div className="relative">
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <Mail className="w-5 h-5 text-gray-500 focus-within:text-[#25B9CB]" />
+                            <div className="space-y-2">
+                                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
+                                <div className="relative group">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 transition-transform group-focus-within:scale-110 duration-300">
+                                        <Mail className="w-5 h-5 text-gray-500 group-focus-within:text-white transition-colors" />
                                     </span>
                                     <input
                                         type="email"
                                         name="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="name@company.com"
-                                        className="w-full bg-[#181A25] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#25B9CB] transition-colors"
+                                        placeholder="example@gmail.com"
+                                        className="w-full bg-white/[0.02] border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] focus:ring-1 focus:ring-white/50 transition-all duration-300 shadow-inner"
                                         required
                                     />
                                 </div>
                             </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Password</label>
-                                <div className="relative">
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <Lock className="w-5 h-5 text-gray-500 focus-within:text-[#25B9CB]" />
+                            <div className="space-y-2">
+                                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Password</label>
+                                <div className="relative group">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 transition-transform group-focus-within:scale-110 duration-300">
+                                        <Lock className="w-5 h-5 text-gray-500 group-focus-within:text-white transition-colors" />
                                     </span>
                                     <input
-                                        type="password"
+                                        type={visible ? "text" : "password"}
                                         name="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full bg-[#181A25] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#25B9CB] transition-colors"
+                                        className="w-full bg-white/[0.02] border border-white/10 rounded-xl pl-12 pr-12 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] focus:ring-1 focus:ring-white/50 transition-all duration-300 shadow-inner"
                                         required
                                     />
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setvisible(!visible)}
+                                            className="text-gray-500 hover:text-white focus:outline-none transition-colors"
+                                        >
+                                            {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                    </span>
                                 </div>
                             </div>
                             <button
                                 type="submit"
-                                className="w-full bg-[#25B9CB] hover:bg-[#1E9EA0] text-white font-semibold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(37,185,203,0.4)] transition-all duration-300 transform hover:scale-[1.02]"
+                                className="w-full relative group overflow-hidden bg-gradient-to-br from-white via-gray-100 to-gray-300 hover:from-white hover:to-gray-200 text-black font-bold py-3.5 px-4 rounded-xl transition-all duration-500 transform hover:-translate-y-[2px] shadow-[0_10px_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_15px_30px_-10px_rgba(255,255,255,0.2)] mt-4"
                             >
-                                Create Account
+                                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+                                <span className="relative flex items-center justify-center gap-2">
+                                    Create Account <Sparkles className="w-4 h-4 text-black" />
+                                </span>
                             </button>
                         </form>
-
-                        <div className="mt-6 pt-6 border-t border-gray-800 text-center">
+                        <div className="mt-8 pt-8 border-t border-white/10 text-center">
                             <p className="text-gray-400 text-sm">
                                 Already have an account?{' '}
-                                <Link to="/login" className="text-[#25B9CB] hover:underline font-semibold">
+                                <Link to="/login" className="text-white hover:text-gray-300 font-semibold transition-colors duration-300">
                                     Sign In
                                 </Link>
                             </p>
@@ -131,5 +145,4 @@ const Register = () => {
         </div>
     );
 };
-
 export default Register;

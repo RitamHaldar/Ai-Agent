@@ -3,3 +3,114 @@
 *::-webkit-scrollbar {
     display: none;
 }
+
+/* Markdown Table Styles */
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.markdown-content th {
+    background: rgba(37, 185, 203, 0.1);
+    color: #25B9CB;
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+}
+
+.markdown-content td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.markdown-content tr:last-child td {
+    border-bottom: none;
+}
+
+.markdown-content tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Markdown typography improvements */
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+    color: #25B9CB;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.markdown-content p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.markdown-content ul, .markdown-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.markdown-content li {
+    margin-top: 0.25rem;
+}
+
+.markdown-content code {
+    background: rgba(37, 185, 203, 0.1);
+    color: #25B9CB;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: inherit;
+}
+
+.markdown-content pre {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 1.25rem;
+    border-radius: 16px;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid #25B9CB;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes thinking-line {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+.animate-thinking-line {
+    animation: thinking-line 1.5s infinite linear;
+}
+
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}

@@ -25,13 +25,13 @@ chatroute.get("/", Identifyuser, getChatsController)
  * @access Private
  */
 
-chatroute.get("/messages", Identifyuser, getMessagesController)
+chatroute.get("/:chatId/messages", Identifyuser, getMessagesController)
 
 /**
  * @description Delete Chat Controller
  * @route DELETE /api/chat
  * @access Private
  */
-chatroute.delete("/", Identifyuser, deleteChatController)
+chatroute.delete("/:chatId", Identifyuser, deleteChatController)
 
 export default chatroute
