@@ -2,16 +2,23 @@ import nodemailer from "nodemailer";
 import "dotenv/config"
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // use SSL
+    port: 587,
+    secure: false, // true for 465, false for other ports
     auth: {
         user: process.env.GOOGLE_USER,
         pass: process.env.GOOGLE_APP_PASS
     }
 })
 transporter.verify()
-    .then(() => { console.log("SMTP server is ready") })
-    .catch((err) => { console.log("SMTP server is not able to send mail", err) })
+    .then(() => {
+        console.log("✅ SMTP server is ready to send mail");
+    })
+    .catch((err) => {
+        console.error("❌ SMTP verification failed:");
+        console.error("Error Code:", err.code);
+        console.error("Error Message:", err.message);
+        console.error("Stack Trace:", err.stack);
+    });
 export async function sendmail({ to, subject, html }) {
     const data = {
         from: process.env.GOOGLE_USER,
