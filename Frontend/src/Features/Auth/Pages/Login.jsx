@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Zap, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../Hooks/useAuth';
@@ -20,9 +20,11 @@ const Login = () => {
         navigate('/');
     };
     const user = useSelector(state => state.auth.user);
-    if (user) {
-        navigate('/');
-    }
+    useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
+    }, [user, navigate]);
     return (
         <div className="min-h-screen bg-[#030305] text-white flex justify-center items-center p-4 md:p-8 relative overflow-hidden font-sans">
             <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-white/10 mix-blend-screen blur-[120px] animate-[pulse_8s_ease-in-out_infinite]"></div>

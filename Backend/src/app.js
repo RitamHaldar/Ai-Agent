@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://axion-ai-8k1l.onrender.com",
     credentials: true
 }))
 
@@ -18,5 +18,5 @@ app.use(cors({
  */
 app.use("/api/auth", authroute);
 app.use("/api/chat", chatroute);
-
+app.use(express.static("./Public"))
 export default app;

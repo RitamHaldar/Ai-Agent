@@ -4,7 +4,7 @@ let io = null;
 export function initSocketServer(httpServer) {
     io = new Server(httpServer, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: "https://axion-ai-8k1l.onrender.com",
             methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
             credentials: true
         }
