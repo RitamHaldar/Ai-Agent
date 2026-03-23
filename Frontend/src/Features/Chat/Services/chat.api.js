@@ -5,7 +5,7 @@ import axios from "axios"
  */
 
 const api = axios.create({
-    baseURL: "https://axion-ai-8k1l.onrender.com",
+    baseURL: "https://axion-ai-h2ll.onrender.com",
     withCredentials: true
 })
 

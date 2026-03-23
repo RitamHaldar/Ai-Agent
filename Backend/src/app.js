@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.json());
 app.use(cors({
-    origin: "https://axion-ai-8k1l.onrender.com",
+    origin: "https://axion-ai-h2ll.onrender.com",
     credentials: true
 }))
 

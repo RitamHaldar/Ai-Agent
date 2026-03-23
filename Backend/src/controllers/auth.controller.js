@@ -44,7 +44,7 @@ export async function register(req, res) {
                 <h1 style="font-size: 28px; font-weight: 300; margin-bottom: 16px; letter-spacing: -0.02em;">Welcome, <span style="font-weight: 600; font-style: italic;">${username}</span></h1>
                 <p style="font-size: 16px; color: rgba(255, 255, 255, 0.7); line-height: 1.6; margin-bottom: 32px;">We're excited to have you on board Axion AI. Please verify your email to start augmenting your intelligence.</p>
                 
-                <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}" 
+                <a href="https://axion-ai-h2ll.onrender.com/api/auth/verify-email?token=${emailVerificationToken}" 
                    style="display: inline-block; background: linear-gradient(135deg, #FFFFFF 0%, #E5E7EB 50%, #D1D5DB 100%); color: #000000; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 10px 20px rgba(255,255,255,0.1); transition: all 0.3s ease;">
                     Verify Email Address
                 </a>
@@ -168,7 +168,7 @@ export async function verifyemail(req, res) {
                 <h1 style="font-size: 24px; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.02em;">Verified Successfully</h1>
                 <p style="font-size: 15px; color: rgba(255, 255, 255, 0.6); line-height: 1.6; margin-bottom: 32px;">Hi ${user.username}, your account is now active. You can now access the full power of Axion AI.</p>
                 
-                <a href="http://localhost:3173/login" 
+                <a href="https://axion-ai-h2ll.onrender.com/login" 
                    style="display: block; background: linear-gradient(135deg, #FFFFFF 0%, #E5E7EB 50%, #D1D5DB 100%); color: #000000; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 10px 20px rgba(255,255,255,0.1);">
                     Go to Login
                 </a>

@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
 export function initializeSocket() {
-    const socket = io("https://axion-ai-8k1l.onrender.com", {
+    const socket = io("https://axion-ai-h2ll.onrender.com", {
         withCredentials: true
     });
     socket.on("connect", () => {
