@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Plus, ArrowRight, User, LogOut, History, Sparkles, Menu, X, Trash2 } from 'lucide-react';
+import { Home, Plus, ArrowRight, User, LogOut, Sparkles, Menu, X, Trash2 } from 'lucide-react';
 import ChatWindow from '../Components/Chatwindow';
 import useChat from '../Hooks/useChat';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +12,7 @@ const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentChatTitle, setCurrentChatTitle] = useState(null);
     const [newChat, setNewChat] = useState(false);
+    const [generatingNewChat, setGeneratingNewChat] = useState(false);
     const fileref = useRef(null)
     const [filepresent, setFilepresent] = useState(null)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -55,6 +56,7 @@ const Dashboard = () => {
             dispatch(setcurrentChatId(chat.data.chatId));
             if (chat.data.title) {
                 setCurrentChatTitle(chat.data.title);
+                setGeneratingNewChat(false);
             }
         } finally {
             setTempUserMessage(null);
@@ -102,10 +104,6 @@ const Dashboard = () => {
                             <Home size={16} className={`${!currentChatId ? '' : 'group-hover:scale-110'} transition-transform`} />
                             <span className="text-[13px] font-bold tracking-wide">Home</span>
                         </button>
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/[0.02] rounded-xl transition-all duration-200 group">
-                            <History size={16} className="group-hover:rotate-[-10deg] transition-transform" />
-                            <span className="text-[13px] font-semibold tracking-wide">History</span>
-                        </a>
                     </nav>
                     <div className="mt-10 px-8">
                         <h2 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.25em] mb-5 flex items-center gap-2">
@@ -113,6 +111,7 @@ const Dashboard = () => {
                         </h2>
                         <ul className="space-y-4 relative">
                             <div className="absolute left-[-12px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+                            {Object.values(messages).length === 0 && !newChat && <div className="text-gray-400 text-[13px] font-semibold tracking-wide">No recent chats</div>}
                             {Object.values(messages).map((chat, idx) => (
                                 <li key={idx} className="relative group cursor-pointer flex items-center justify-between" onClick={() => {
                                     openChat(chat);
@@ -146,7 +145,9 @@ const Dashboard = () => {
                                         <Trash2 size={13} />
                                     </button>
                                 </li>
+
                             ))}
+                            {(newChat && generatingNewChat) && <div className="title-skeleton mb-1"></div>}
                         </ul>
                     </div>
                 </div>
@@ -191,7 +192,7 @@ const Dashboard = () => {
                         <div className="flex-1 flex flex-col items-center justify-start md:justify-center px-4 md:px-8 max-w-5xl mx-auto w-full relative z-10 pt-32 pb-32 md:py-20 min-h-0">
                             <div className="text-center mb-8 lg:mb-16 w-full animate-[fadeIn_0.8s_ease-out] order-1">
                                 <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-4 lg:mb-8 tracking-tight text-white leading-[1.3] px-2 max-w-4xl mx-auto">
-                                    How can I <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500 font-semibold italic">augment</span> your <br className="hidden sm:block" /> intelligence today?
+                                    How may I <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500 font-semibold italic"> assist </span> you <br className="hidden sm:block" /> today?
                                 </h1>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-5 w-full max-w-5xl px-4 z-10 relative py-2 order-2 md:order-3 mb-8 md:mb-0">
@@ -249,7 +250,11 @@ const Dashboard = () => {
                                 className="flex-1 px-1 lg:px-2 py-3 bg-transparent border-none text-[14px] lg:text-[15px] text-white placeholder-gray-500 focus:ring-0 focus:outline-none font-medium resize-none [field-sizing:content] min-w-0 text-wrap max-h-[120px] lg:max-h-[180px] selection:bg-white/30"
                             />
                             <button
-                                onClick={() => { sendmessage() }}
+                                onClick={() => {
+                                    sendmessage();
+                                    setGeneratingNewChat(true)
+
+                                }}
                                 className="bg-gradient-to-br from-white via-gray-100 to-gray-300 hover:from-white hover:to-gray-200 text-black w-9 h-9 lg:w-10 lg:h-10 rounded-xl lg:rounded-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-[1.05] active:scale-95 shadow-[0_5px_15px_rgba(255,255,255,0.1)] group/btn relative overflow-hidden shrink-0"
                             >
                                 <div className="absolute inset-0 bg-white/40 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 block"></div>

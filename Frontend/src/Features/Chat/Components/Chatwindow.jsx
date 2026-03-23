@@ -18,68 +18,6 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar }) =
     return (
         <div className="flex flex-col h-full w-full bg-transparent relative overflow-hidden">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-white/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
-            <style>{`
-                @keyframes thinking-wave {
-                    0%, 100% { opacity: 0.4; transform: translateY(0); }
-                    50% { opacity: 1; transform: translateY(-2px); }
-                }
-                .thinking-dot {
-                    animation: thinking-wave 1.4s infinite;
-                }
-                .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
-                .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
-                @keyframes shimmer-sweep {
-                    0% { transform: translateX(-100%); }
-                    100% { transform: translateX(100%); }
-                }
-                .shimmer-effect::after {
-                    content: "";
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    bottom: 0;
-                    left: 0;
-                    background: linear-gradient(
-                        90deg,
-                        transparent,
-                        rgba(255, 255, 255, 0.05),
-                        transparent
-                    );
-                    animation: shimmer-sweep 2s infinite;
-                }
-                @keyframes title-pulse {
-                    0%, 100% { opacity: 0.5; width: 120px; }
-                    50% { opacity: 0.8; width: 180px; }
-                }
-                .title-skeleton {
-                    height: 14px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 4px;
-                    animation: title-pulse 2s infinite ease-in-out;
-                }
-                .markdown-content pre {
-                    overflow-x: auto;
-                    max-width: 100%;
-                    background: rgba(0, 0, 0, 0.2);
-                    padding: 1rem;
-                    border-radius: 0.75rem;
-                    margin: 0.75rem 0;
-                    scrollbar-width: none;
-                }
-                .markdown-content pre::-webkit-scrollbar {
-                    display: none;
-                }
-                .markdown-content code {
-                    word-break: break-word;
-                    white-space: pre-wrap;
-                }
-                .markdown-content p {
-                    margin-bottom: 0.75rem;
-                }
-                .markdown-content p:last-child {
-                    margin-bottom: 0;
-                }
-            `}</style>
             <header className="flex items-center justify-between px-6 py-2.5 lg:py-3 bg-[#0b0c10]/40 backdrop-blur-xl border-b border-white/5 relative z-20 shadow-lg">
                 <div className="flex items-center gap-4">
                     <button onClick={onToggleSidebar} className="lg:hidden p-2 hover:bg-white/5 rounded-xl transition-colors text-gray-400">

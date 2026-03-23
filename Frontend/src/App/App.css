@@ -61,7 +61,9 @@
 }
 
 /* Markdown typography improvements */
-.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
     color: var(--accent);
     font-weight: 700;
     margin-top: 2rem;
@@ -69,9 +71,17 @@
     letter-spacing: -0.02em;
 }
 
-.markdown-content h1 { font-size: 1.8rem; }
-.markdown-content h2 { font-size: 1.5rem; }
-.markdown-content h3 { font-size: 1.2rem; }
+.markdown-content h1 {
+    font-size: 1.8rem;
+}
+
+.markdown-content h2 {
+    font-size: 1.5rem;
+}
+
+.markdown-content h3 {
+    font-size: 1.2rem;
+}
 
 .markdown-content p {
     margin-bottom: 1.25rem;
@@ -79,7 +89,8 @@
     color: var(--text-primary);
 }
 
-.markdown-content ul, .markdown-content ol {
+.markdown-content ul,
+.markdown-content ol {
     margin-left: 1.5rem;
     margin-bottom: 1.25rem;
     color: var(--text-primary);
@@ -128,8 +139,13 @@
 }
 
 @keyframes thinking-line {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(200%);
+    }
 }
 
 .animate-thinking-line {
@@ -137,17 +153,118 @@
 }
 
 .shimmer {
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.04) 50%,
-        rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.04) 50%,
+            rgba(255, 255, 255, 0) 100%);
     background-size: 200% 100%;
     animation: shimmer 2.5s infinite linear;
 }
 
 @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes thinking-wave {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: translateY(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+}
+
+.thinking-dot {
+    animation: thinking-wave 1.4s infinite;
+}
+
+.thinking-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.thinking-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes shimmer-sweep {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.shimmer-effect::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.05),
+            transparent);
+    animation: shimmer-sweep 2s infinite;
+}
+
+@keyframes title-pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        width: 120px;
+    }
+
+    50% {
+        opacity: 0.8;
+        width: 180px;
+    }
+}
+
+.title-skeleton {
+    height: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    animation: title-pulse 2s infinite ease-in-out;
+}
+
+.markdown-content pre {
+    overflow-x: auto;
+    max-width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin: 0.75rem 0;
+    scrollbar-width: none;
+}
+
+.markdown-content pre::-webkit-scrollbar {
+    display: none;
+}
+
+.markdown-content code {
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.markdown-content p {
+    margin-bottom: 0.75rem;
+}
+
+.markdown-content p:last-child {
+    margin-bottom: 0;
 }

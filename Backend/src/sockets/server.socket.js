@@ -9,11 +9,8 @@ export function initSocketServer(httpServer) {
             credentials: true
         }
     })
-    io.on("connection", (socket) => {
-        console.log("User connected", socket.id);
-    })
 }
-export function getio() {
+export function getIO() {
     if (!io) {
         throw new Error("Socket server not initialized");
     }
