@@ -3,11 +3,12 @@ import "dotenv/config"
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
         user: process.env.GOOGLE_USER,
         pass: process.env.GOOGLE_APP_PASS
-    }
+    },
+    family: 4
 })
 transporter.verify()
     .then(() => {
