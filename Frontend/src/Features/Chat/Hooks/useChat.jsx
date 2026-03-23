@@ -4,23 +4,7 @@ import { setloading, setchats, setmessages, addnewchat, addMessage } from "../ch
 
 const useChat = () => {
     const dispatch = useDispatch()
-    const handlesendMessage = async ({ message, chatId, file }) => {
-        try {
-            if (chatId) {
-                dispatch(addMessage({ chatId, message, role: "user" }))
-            }
-            dispatch(setloading(true))
-            const response = await createChat({ message, chatId, file })
-            if (!chatId) {
-                dispatch(addnewchat({ chatId: response.data.chatId, title: response.data.title }))
-                dispatch(addMessage({ chatId: response.data.chatId, message: message, role: "user" }))
-            }
-            dispatch(addMessage({ chatId: response.data.chatId || chatId, message: response.data.aiMessage.content, role: "ai" }))
-            return response
-        } finally {
-            dispatch(setloading(false))
-        }
-    }
+
     const handleGetChats = async () => {
         dispatch(setloading(true))
         const response = await getChats()
@@ -36,6 +20,26 @@ const useChat = () => {
         dispatch(setloading(false))
         return response
     }
+
+    const handlesendMessage = async ({ message, chatId, file }) => {
+        try {
+            if (chatId) {
+                dispatch(addMessage({ chatId, message, role: "user" }))
+            }
+            dispatch(setloading(true))
+            const response = await createChat({ message, chatId, file })
+            if (!chatId) {
+                dispatch(addnewchat({ chatId: response.data.chatId, title: response.data.title }))
+                dispatch(addMessage({ chatId: response.data.chatId, message: message, role: "user" }))
+            }
+            dispatch(addMessage({ chatId: response.data.chatId || chatId, message: response.data.aiMessage.content, role: "ai" }))
+            return response
+
+        } finally {
+            dispatch(setloading(false))
+        }
+    }
+
     const handleGetMessages = async (chatId) => {
         dispatch(setloading(true))
         const response = await getMessages(chatId)

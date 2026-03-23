@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { Zap, Mail, Lock, Eye, EyeOff, Sparkles, Shield, Cpu } from 'lucide-react';
+import { useState } from 'react';
+import { Zap, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../Hooks/useAuth';
 import { useSelector } from 'react-redux';
+
 const Login = () => {
+    const [loginwithemail, setLoginwithemail] = useState(true);
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [visible, setvisible] = useState(false);
-    const { handlelogin, handlegetme } = useAuth();
+    const { handlelogin } = useAuth();
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,14 +18,7 @@ const Login = () => {
         setEmail('');
         setPassword('');
         navigate('/');
-
     };
-    try {
-        handlegetme();
-    }
-    catch (error) {
-        console.log(error);
-    }
     const user = useSelector(state => state.auth.user);
     if (user) {
         navigate('/');
@@ -61,17 +57,18 @@ const Login = () => {
                         <p className="text-gray-400 mb-8 text-sm font-medium">Log in to your account to continue.</p>
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
+                                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">{loginwithemail ? "Email Address" : "Username"}</label>
                                 <div className="relative group">
+                                    <button className="absolute right-4 -translate-y-6 text-[11px] text-gray-500 hover:text-[#ECEEF1] transition-colors font-medium" onClick={(e) => { e.preventDefault(); setLoginwithemail(!loginwithemail) }}>Continue with {loginwithemail ? "Username" : "Email"}?</button>
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 transition-transform group-focus-within:scale-110 duration-300">
                                         <Mail className="w-5 h-5 text-gray-500 group-focus-within:text-white transition-colors" />
                                     </span>
                                     <input
-                                        type="email"
-                                        name="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="example@gmail.com"
+                                        type={loginwithemail ? "email" : "text"}
+                                        name={loginwithemail ? "email" : "username"}
+                                        value={loginwithemail ? email : username}
+                                        onChange={(e) => loginwithemail ? setEmail(e.target.value) : setUsername(e.target.value)}
+                                        placeholder={loginwithemail ? "example@gmail.com" : "username"}
                                         className="w-full bg-white/[0.02] border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-white/50 focus:bg-white/[0.05] focus:ring-1 focus:ring-white/50 transition-all duration-300 shadow-inner"
                                         required
                                     />
@@ -80,7 +77,6 @@ const Login = () => {
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center pl-1 pr-1">
                                     <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
-                                    <a href="#" className="text-[11px] text-gray-500 hover:text-[#25B9CB] transition-colors font-medium">Forgot password?</a>
                                 </div>
                                 <div className="relative group">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 transition-transform group-focus-within:scale-110 duration-300">

@@ -1,6 +1,6 @@
 import express from "express"
 import { registerValidator, loginValidator } from "../validator/auth.validator.js";
-import { register, login, getme, verifyemail } from "../controllers/user.controller.js";
+import { register, login, getme, verifyemail, logout } from "../controllers/auth.controller.js";
 import { Identifyuser } from "../middlewares/auth.middleware.js";
 
 const authroute = express.Router();
@@ -32,5 +32,14 @@ authroute.get("/get-me", Identifyuser, getme);
  */
 
 authroute.get("/verify-email", verifyemail);
+
+
+/**
+ * @description logout user
+ * @route GET /api/auth/logout
+ * @access private
+ */
+
+authroute.get("/logout", Identifyuser, logout);
 
 export default authroute

@@ -8,7 +8,12 @@ function App() {
 
   const { handlegetme } = useAuth()
   useEffect(() => {
-    handlegetme()
+    try {
+      handlegetme()
+    }
+    catch (error) {
+      console.log(error);
+    }
   }, [])
 
   return (

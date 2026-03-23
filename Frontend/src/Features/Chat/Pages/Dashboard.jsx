@@ -1,21 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import {
-    Home,
-    Plus,
-    ArrowRight,
-    User,
-    LogOut,
-    History,
-    Sparkles,
-    Menu,
-    X,
-    Trash2
-} from 'lucide-react';
+import { Home, Plus, ArrowRight, User, LogOut, History, Sparkles, Menu, X, Trash2 } from 'lucide-react';
 import ChatWindow from '../Components/Chatwindow';
 import useChat from '../Hooks/useChat';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializeSocket } from '../Services/chat.socket';
 import { setcurrentChatId } from '../chat.slice';
+import { useAuth } from '../../Auth/Hooks/useAuth';
+import { useNavigate } from 'react-router';
+
 const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentChatTitle, setCurrentChatTitle] = useState(null);
@@ -27,6 +19,8 @@ const Dashboard = () => {
     const messages = useSelector((state) => state.chat.messages);
     const currentChatId = useSelector((state) => state.chat.currentChatId);
     const user = useSelector((state) => state.auth.user);
+    const { handlelogout } = useAuth();
+    const navigate = useNavigate();
     useEffect(() => {
         handleGetChats();
         initializeSocket();
@@ -68,8 +62,8 @@ const Dashboard = () => {
     }
     return (
         <div className="flex h-screen bg-[#030305] text-white font-sans overflow-hidden relative">
-            <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#25B9CB]/10 mix-blend-screen blur-[120px] animate-[pulse_8s_ease-in-out_infinite] z-0 pointer-events-none"></div>
-            <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-600/10 mix-blend-screen blur-[120px] animate-[pulse_10s_ease-in-out_infinite_reverse] z-0 pointer-events-none"></div>
+            <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-white/5 mix-blend-screen blur-[120px] animate-[pulse_8s_ease-in-out_infinite] z-0 pointer-events-none"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-white/[0.03] mix-blend-screen blur-[120px] animate-[pulse_10s_ease-in-out_infinite_reverse] z-0 pointer-events-none"></div>
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4wNSkiLz48L3N2Zz4=')] opacity-50 z-0 pointer-events-none"></div>
             {isSidebarOpen && (
                 <div
@@ -131,7 +125,7 @@ const Dashboard = () => {
                                             ${currentChatId == chat.Id ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.5)]' : 'bg-white/10 group-hover:bg-white/30'}
                                         `}></div>
                                         <span className={`
-                                            text-[12px] transition-all duration-300 truncate block font-medium group-hover:translate-x-1
+                                            text-[12px] transition-all duration-300 truncate block font-medium group-hover:translate-x-1 pr-3
                                             ${currentChatId == chat.Id ? 'text-white translate-x-1 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'text-gray-500 hover:text-white'}
                                         `}>
                                             {chat.title}
@@ -146,7 +140,7 @@ const Dashboard = () => {
                                             setCurrentChatTitle(null);
                                             setNewChat(false)
                                         }}
-                                        className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-400 lg:text-gray-500 transition-all duration-300"
+                                        className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 p-1.5 text-gray-400 hover:text-white lg:text-gray-500 transition-all duration-300"
                                         title="Delete Chat"
                                     >
                                         <Trash2 size={13} />
@@ -164,16 +158,19 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-bold text-white/90 truncate tracking-tight group-hover/profile:text-white transition-colors">{user.username}</p>
+                            <p className="text-[13px] font-bold text-white/90 truncate tracking-tight group-hover/profile:text-white transition-colors">{user.user || user.username}</p>
                         </div>
-                        <button className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-300 shrink-0" title="Logout">
+                        <button className="p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 shrink-0" title="Logout" onClick={() => {
+                            handlelogout();
+                            navigate("/login");
+                        }}>
                             <LogOut size={16} />
                         </button>
                     </div>
                 </div>
             </aside>
             <main className="flex-1 flex flex-col relative z-20 w-full overflow-y-auto lg:overflow-hidden scrollbar-hide">
-                {!currentChatId && !currentChatTitle && !newChat ? (
+                {(!currentChatId && !newChat) ? (
                     <>
                         <header className="flex justify-between items-center px-6 lg:px-10 py-5 lg:py-6 relative z-10">
                             <div className="flex items-center gap-4">
@@ -184,7 +181,7 @@ const Dashboard = () => {
                                     <Menu size={20} className="text-gray-300" />
                                 </button>
                                 <div className="flex items-center gap-3 bg-white/[0.02] px-4 lg:px-5 py-2 lg:py-2.5 rounded-2xl border border-white/5 backdrop-blur-md shadow-lg">
-                                    <Sparkles size={14} className="text-[#25B9CB] shadow-[0_0_10px_rgba(37,185,203,0.5)] rounded-full" />
+                                    <Sparkles size={14} className="text-white shadow-[0_0_10px_rgba(255,255,255,0.3)] rounded-full" />
                                     <span className="text-[9px] lg:text-[10px] font-black tracking-[0.4em] text-gray-400 uppercase">
                                         Axion AI
                                     </span>
@@ -202,7 +199,7 @@ const Dashboard = () => {
                                     <button
                                         key={index}
                                         onClick={() => { setSearchQuery(suggestion) }}
-                                        className="group/card text-left p-3 sm:p-5 lg:p-6 bg-white/[0.02] border border-white/5 hover:border-[#25B9CB]/40 rounded-3xl transition-all duration-500 backdrop-blur-xl relative overflow-hidden active:scale-[0.98] shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_15px_40px_rgba(37,185,203,0.15)] hover:-translate-y-1"
+                                        className="group/card text-left p-3 sm:p-5 lg:p-6 bg-white/[0.02] border border-white/5 hover:border-white/40 rounded-3xl transition-all duration-500 backdrop-blur-xl relative overflow-hidden active:scale-[0.98] shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_15px_40px_rgba(255,255,255,0.1)] hover:-translate-y-1"
                                     >
                                         <div className="absolute top-0 right-0 p-4 opacity-0 group-hover/card:opacity-100 transition-opacity transform group-hover/card:translate-x-0 -translate-x-2 duration-300">
                                             <ArrowRight size={16} className="text-white" />
@@ -249,7 +246,7 @@ const Dashboard = () => {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Ask Axion AI anything..."
                                 rows={1}
-                                className="flex-1 px-1 lg:px-2 py-3 bg-transparent border-none text-[14px] lg:text-[15px] text-white placeholder-gray-500 focus:ring-0 focus:outline-none font-medium resize-none [field-sizing:content] min-w-0 text-wrap max-h-[120px] lg:max-h-[180px] selection:bg-[#25B9CB]/30"
+                                className="flex-1 px-1 lg:px-2 py-3 bg-transparent border-none text-[14px] lg:text-[15px] text-white placeholder-gray-500 focus:ring-0 focus:outline-none font-medium resize-none [field-sizing:content] min-w-0 text-wrap max-h-[120px] lg:max-h-[180px] selection:bg-white/30"
                             />
                             <button
                                 onClick={() => { sendmessage() }}

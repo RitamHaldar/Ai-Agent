@@ -1,6 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import authroute from "./routes/user.routes.js"
+import authroute from "./routes/auth.routes.js"
 import chatroute from "./routes/chats.routes.js"
 import cors from "cors"
 

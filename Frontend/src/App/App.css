@@ -1,37 +1,55 @@
 @import "tailwindcss";
 
+:root {
+    --bg-main: #030305;
+    --bg-sidebar: #0b0c10;
+    --accent: #FFFFFF;
+    --accent-glow: rgba(255, 255, 255, 0.2);
+    --border-subtle: rgba(255, 255, 255, 0.05);
+    --border-strong: rgba(255, 255, 255, 0.1);
+    --text-primary: #ECEEF1;
+    --text-secondary: rgba(236, 238, 241, 0.6);
+}
+
 *::-webkit-scrollbar {
     display: none;
+}
+
+/* Global transitions */
+* {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Markdown Table Styles */
 .markdown-content table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     margin: 1.5rem 0;
     font-size: 0.9rem;
     background: rgba(255, 255, 255, 0.02);
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .markdown-content th {
-    background: rgba(37, 185, 203, 0.1);
-    color: #25B9CB;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent);
     text-align: left;
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-strong);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    font-size: 0.7rem;
 }
 
 .markdown-content td {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.8);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
 }
 
 .markdown-content tr:last-child td {
@@ -44,50 +62,69 @@
 
 /* Markdown typography improvements */
 .markdown-content h1, .markdown-content h2, .markdown-content h3 {
-    color: #25B9CB;
+    color: var(--accent);
     font-weight: 700;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
 }
 
+.markdown-content h1 { font-size: 1.8rem; }
+.markdown-content h2 { font-size: 1.5rem; }
+.markdown-content h3 { font-size: 1.2rem; }
+
 .markdown-content p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+    color: var(--text-primary);
 }
 
 .markdown-content ul, .markdown-content ol {
     margin-left: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-primary);
 }
 
 .markdown-content li {
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
 }
 
 .markdown-content code {
-    background: rgba(37, 185, 203, 0.1);
-    color: #25B9CB;
-    padding: 2px 6px;
-    border-radius: 6px;
-    font-size: 0.9em;
-    font-family: inherit;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent);
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .markdown-content pre {
-    background: rgba(0, 0, 0, 0.4);
-    padding: 1.25rem;
-    border-radius: 16px;
+    background: #0b0c10;
+    padding: 1.5rem;
+    border-radius: 20px;
     overflow-x: auto;
-    margin: 1.25rem 0;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 1.5rem 0;
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
 .markdown-content blockquote {
-    border-left: 4px solid #25B9CB;
-    padding-left: 1rem;
-    margin: 1rem 0;
+    border-left: 4px solid var(--accent);
+    padding: 0.75rem 0 0.75rem 1.5rem;
+    margin: 1.5rem 0;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 0 12px 12px 0;
+}
+
+/* HR styling */
+.markdown-content hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    margin: 2rem 0;
 }
 
 @keyframes thinking-line {
@@ -96,18 +133,18 @@
 }
 
 .animate-thinking-line {
-    animation: thinking-line 1.5s infinite linear;
+    animation: thinking-line 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .shimmer {
     background: linear-gradient(
         90deg,
         rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0.04) 50%,
         rgba(255, 255, 255, 0) 100%
     );
     background-size: 200% 100%;
-    animation: shimmer 2s infinite;
+    animation: shimmer 2.5s infinite linear;
 }
 
 @keyframes shimmer {

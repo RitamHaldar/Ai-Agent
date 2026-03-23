@@ -8,7 +8,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [visible, setvisible] = useState(false);
-    const { handleregister, handlegetme } = useAuth();
+    const { handleregister } = useAuth();
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,14 +17,7 @@ const Register = () => {
         setEmail('');
         setPassword('');
         navigate('/');
-
     };
-    try {
-        handlegetme();
-    }
-    catch (error) {
-        console.log(error);
-    }
     const user = useSelector(state => state.auth.user);
     if (user) {
         navigate('/');
