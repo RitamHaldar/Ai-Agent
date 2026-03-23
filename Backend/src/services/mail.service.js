@@ -1,32 +1,30 @@
-import nodemailer from "nodemailer";
-import "dotenv/config"
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.GOOGLE_USER,
-        pass: process.env.GOOGLE_APP_PASS
-    },
-    family: 4
-})
-transporter.verify()
-    .then(() => {
-        console.log("✅ SMTP server is ready to send mail");
-    })
-    .catch((err) => {
-        console.error("❌ SMTP verification failed:");
-        console.error("Error Code:", err.code);
-        console.error("Error Message:", err.message);
-        console.error("Stack Trace:", err.stack);
-    });
-export async function sendmail({ to, subject, html }) {
-    const data = {
-        from: process.env.GOOGLE_USER,
-        to,
-        subject,
-        html
+import { Resend } from 'resend';
+import "dotenv/config";
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function sendmail({ to, subject, html }) {
+    if (!process.env.RESEND_API_KEY) {
+        console.error("❌ RESEND_API_KEY is missing from environment variables!");
+        throw new Error("Missing Email API Key");
     }
-    await transporter.sendMail(data)
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: process.env.GOOGLE_USER,
+            to: [to],
+            subject: subject,
+            html: html
+        });
+
+        if (error) {
+            console.error(`❌ Resend API Error:`, error);
+            throw new Error(error.message || "Failed to send email via Resend API");
+        }
+
+        console.log(`✅ Email sent successfully to ${to} via Resend. ID: ${data.id}`);
+    } catch (error) {
+        console.error(`❌ Encountered an error sending email to ${to}:`, error);
+        throw error;
+    }
 }
