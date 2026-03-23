@@ -16,7 +16,6 @@ export const useAuth = () => {
     const handleregister = async ({ username, email, password }) => {
         dispatch(setLoading(true))
         const resposne = await register({ username, email, password })
-        dispatch(setUser(resposne.user))
         dispatch(setLoading(false))
         return resposne
     }

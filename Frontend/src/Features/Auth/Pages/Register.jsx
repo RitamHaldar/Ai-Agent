@@ -16,12 +16,12 @@ const Register = () => {
         setusername('');
         setEmail('');
         setPassword('');
-        navigate('/');
+        navigate('/verify');
     };
     const user = useSelector(state => state.auth.user);
     useEffect(() => {
         if (user) {
-            navigate('/');
+            navigate('/login');
         }
     }, [user, navigate]);
     return (
