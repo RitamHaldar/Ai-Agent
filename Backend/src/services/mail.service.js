@@ -11,7 +11,7 @@ export async function sendmail({ to, subject, html }) {
 
     try {
         const { data, error } = await resend.emails.send({
-            from: process.env.GOOGLE_USER,
+            from: 'onboarding@resend.dev',
             to: [to],
             subject: subject,
             html: html
