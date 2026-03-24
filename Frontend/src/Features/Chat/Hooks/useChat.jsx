@@ -21,13 +21,14 @@ const useChat = () => {
         return response
     }
 
-    const handlesendMessage = async ({ message, chatId, file }) => {
+    const handlesendMessage = async ({ message, chatId, file, socketId }) => {
         try {
             if (chatId) {
                 dispatch(addMessage({ chatId, message, role: "user" }))
             }
             dispatch(setloading(true))
-            const response = await createChat({ message, chatId, file })
+            const response = await createChat({ message, chatId, file, socketId })
+
             if (!chatId) {
                 dispatch(addnewchat({ chatId: response.data.chatId, title: response.data.title }))
                 dispatch(addMessage({ chatId: response.data.chatId, message: message, role: "user" }))

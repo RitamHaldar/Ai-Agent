@@ -3,18 +3,38 @@ import { Menu } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useSelector } from 'react-redux';
-const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar }) => {
+const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, streamingMessage }) => {
     const chats = messages?.messages || [];
     const loading = useSelector((state) => state.chat.loading);
     const scrollRef = useRef(null);
-    useEffect(() => {
+    const isAtBottom = useRef(true);
+
+    const handleScroll = () => {
+        if (scrollRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+            isAtBottom.current = Math.abs(scrollHeight - clientHeight - scrollTop) < 150;
+        }
+    };
+
+    const scrollToBottom = (behavior = 'smooth') => {
         if (scrollRef.current) {
             scrollRef.current.scrollTo({
                 top: scrollRef.current.scrollHeight,
-                behavior: 'smooth'
+                behavior
             });
         }
-    }, [chats, loading, tempUserMessage]);
+    };
+
+    useEffect(() => {
+        scrollToBottom('smooth');
+        isAtBottom.current = true;
+    }, [chats.length, tempUserMessage, loading]);
+    useEffect(() => {
+        if (streamingMessage && isAtBottom.current) {
+            scrollToBottom('auto');
+        }
+    }, [streamingMessage]);
+
     return (
         <div className="flex flex-col h-full w-full bg-transparent relative overflow-hidden">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-white/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
@@ -34,7 +54,11 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar }) =
                     </div>
                 </div>
             </header>
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-6 lg:space-y-8 scrollbar-hide relative z-10">
+            <div
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-6 lg:space-y-8 scrollbar-hide relative z-10"
+            >
                 {chats.map((msg, idx) => (
                     <div
                         key={idx}
@@ -67,7 +91,25 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar }) =
                         </div>
                     </div>
                 )}
-                {(loading || tempUserMessage) && (
+                {streamingMessage && (
+                    <div className="flex w-full justify-start animate-[fadeIn_0.3s_ease-out]">
+                        <div className="flex items-start max-w-[85%] lg:max-w-[72%] flex-row">
+                            <div className="space-y-4 pt-1">
+                                <div className="px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl bg-white/[0.03] border border-white/10 text-gray-100 backdrop-blur-md rounded-tl-none hover:bg-white/[0.05] transition-colors w-fit max-w-full break-words overflow-hidden">
+                                    <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full break-words overflow-hidden">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {streamingMessage}
+                                        </ReactMarkdown>
+                                        <span className="typing-cursor"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
+                {(loading && !streamingMessage) && (
                     <div className="flex w-full justify-start animate-[fadeIn_0.5s_ease-out]">
                         <div className="flex items-start max-w-[85%] lg:max-w-[72%] flex-row">
                             <div className="space-y-4 pt-1 overflow-hidden">
@@ -94,9 +136,12 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar }) =
                         </div>
                     </div>
                 )}
+
+
             </div>
             <div className="h-32 lg:h-4 lg:block shrink-0"></div>
         </div>
     );
 };
+
 export default ChatWindow;

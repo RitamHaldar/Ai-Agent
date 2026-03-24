@@ -1,8 +1,10 @@
 import { chatModel } from "../models/chat.model.js"
 import { messageModel } from "../models/messages.model.js"
-import { generateResponse, generateTitle } from "../services/ai.service.js"
+import { streamResponse, generateTitle } from "../services/ai.service.js"
 import { uploadPDF } from "../services/pdfupload.service.js"
 import { readPDF } from "../services/pdfreading.service.js"
+import { getIO } from "../sockets/server.socket.js"
+
 
 /**
  * @description Chat Controller
@@ -11,7 +13,7 @@ import { readPDF } from "../services/pdfreading.service.js"
  */
 
 export async function chatController(req, res) {
-    const { message, chatId } = req.body;
+    const { message, chatId, socketId } = req.body;
     const file = req.file ? req.file : null;
     let chat = null, title = null, pdfcontent = null;
     if (file) {
@@ -29,28 +31,49 @@ export async function chatController(req, res) {
             title
         })
     }
+    const currentChatId = chatId || chat._id;
+
     const userMessage = await messageModel.create({
-        chat: chatId || chat._id,
+        chat: currentChatId,
         role: "user",
         content: pdfcontent ? message + "\n\n" + pdfcontent : message
     })
+
     const messages = await messageModel.find({
-        chat: chatId || chat._id
-    })
-    const response = await generateResponse(messages)
+        chat: currentChatId
+    }).sort({ createdAt: 1 });
+
+    const io = getIO();
+
+    const responseContent = await streamResponse(messages, (chunk) => {
+        if (socketId) {
+            io.to(socketId).emit("message", chunk);
+        }
+    });
+
     const aiMessage = await messageModel.create({
-        chat: chatId || chat._id,
+        chat: currentChatId,
         role: "ai",
-        content: response
+        content: responseContent
     })
+    if (socketId) {
+        io.to(socketId).emit("message-complete", {
+            chatId: currentChatId,
+            title: title || undefined,
+            aiMessage
+        });
+    }
+
     res.status(200).json({
-        message: "Chat created successfully",
-        chatId: chatId || chat._id,
+        message: "Chat processed successfully",
+        chatId: currentChatId,
         success: true,
         title,
         aiMessage
     })
 }
+
+
 
 /**
  * @description Get Chats Controller

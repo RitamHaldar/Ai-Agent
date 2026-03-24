@@ -15,14 +15,16 @@ const api = axios.create({
  * @access Private
  */
 
-export async function createChat({ message, chatId, file }) {
+export async function createChat({ message, chatId, file, socketId }) {
     const formData = new FormData();
     formData.append("message", message);
     formData.append("chatId", chatId);
     formData.append("pdf", file);
+    formData.append("socketId", socketId);
     const response = await api.post("/api/chat/message", formData)
     return response
 }
+
 
 /**
  * @description Get Chats

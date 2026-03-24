@@ -3,7 +3,7 @@ import { Home, Plus, ArrowRight, User, LogOut, Sparkles, Menu, X, Trash2 } from 
 import ChatWindow from '../Components/Chatwindow';
 import useChat from '../Hooks/useChat';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializeSocket } from '../Services/chat.socket';
+import { initializeSocket, getSocket } from '../Services/chat.socket';
 import { setcurrentChatId } from '../chat.slice';
 import { useAuth } from '../../Auth/Hooks/useAuth';
 import { useNavigate } from 'react-router';
@@ -34,7 +34,29 @@ const Dashboard = () => {
         'How to create and manage multiple Docker containers using Docker Compose?',
     ];
     const [tempUserMessage, setTempUserMessage] = useState(null);
+
+    const [streamingMessage, setStreamingMessage] = useState('');
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const socket = getSocket();
+        if (socket) {
+            socket.on("message", (chunk) => {
+                setStreamingMessage((prev) => prev + chunk);
+            });
+
+            socket.on("message-complete", () => {
+                setStreamingMessage('');
+            });
+        }
+        return () => {
+            if (socket) {
+                socket.off("message");
+                socket.off("message-complete");
+            }
+        };
+    }, []);
+
     function openChat(chat) {
         dispatch(setcurrentChatId(chat.Id));
         handleGetMessages(chat.Id);
@@ -48,7 +70,10 @@ const Dashboard = () => {
         }
         setNewChat(true);
         try {
-            const chat = await handlesendMessage({ message, chatId: currentChatId || '', file: fileref.current.files[0] });
+            const socket = getSocket();
+            const chat = await handlesendMessage({ message, chatId: currentChatId || '', file: fileref.current.files[0], socketId: socket?.id });
+
+
             if (fileref?.current?.files) {
                 fileref.current.files = null;
             }
@@ -91,7 +116,7 @@ const Dashboard = () => {
                     </div>
                     <div className="px-5 mb-8">
                         <button
-                            onClick={() => { dispatch(setcurrentChatId(null)); setSearchQuery(''); setCurrentChatTitle(null); setNewChat(false) }}
+                            onClick={() => { dispatch(setcurrentChatId(null)); setSearchQuery(''); setCurrentChatTitle(null); setNewChat(false); setIsSidebarOpen(false); }}
                             className="w-full relative group overflow-hidden bg-gradient-to-br from-white via-gray-100 to-gray-300 hover:from-white hover:to-gray-200 text-black font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 transition-all duration-500 transform hover:-translate-y-[2px] shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_15px_40px_rgba(255,255,255,0.2)]"
                         >
                             <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out block"></div>
@@ -192,6 +217,9 @@ const Dashboard = () => {
                         <div className="flex-1 flex flex-col items-center justify-start md:justify-center px-4 md:px-8 max-w-5xl mx-auto w-full relative z-10 pt-32 pb-32 md:py-20 min-h-0">
                             <div className="text-center mb-8 lg:mb-16 w-full animate-[fadeIn_0.8s_ease-out] order-1">
                                 <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-4 lg:mb-8 tracking-tight text-white leading-[1.3] px-2 max-w-4xl mx-auto">
+                                    Hii <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500 italic"> {user.user || user.username} </span> <br className="hidden sm:block" />
+                                </h1>
+                                <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-light mb-4 lg:mb-8 tracking-tight text-white leading-[1.3] px-2 max-w-4xl mx-auto">
                                     How may I <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500 font-semibold italic"> assist </span> you <br className="hidden sm:block" /> today?
                                 </h1>
                             </div>
@@ -214,7 +242,13 @@ const Dashboard = () => {
                         </div>
                     </>
                 ) : (
-                    <ChatWindow chatTitle={currentChatTitle} messages={messages[currentChatId]} tempUserMessage={tempUserMessage} onToggleSidebar={toggleSidebar} />
+                    <ChatWindow
+                        chatTitle={currentChatTitle}
+                        messages={messages[currentChatId]}
+                        tempUserMessage={tempUserMessage}
+                        onToggleSidebar={toggleSidebar}
+                        streamingMessage={streamingMessage}
+                    />
                 )}
                 <div className="fixed bottom-0 left-0 w-full p-4 lg:relative lg:p-0 bg-gradient-to-t from-[#030305] via-[#030305]/95 to-transparent lg:bg-none z-40 lg:z-20 lg:mb-4 lg:max-w-2xl lg:mx-auto group/container order-3 md:order-2">
                     <div className="absolute inset-[-20px] bg-gradient-to-r from-gray-400/20 via-gray-500/10 to-gray-400/20 blur-[40px] lg:blur-[50px] opacity-0 group-focus-within/container:opacity-100 transition-opacity duration-700 pointer-events-none rounded-full hidden lg:block"></div>

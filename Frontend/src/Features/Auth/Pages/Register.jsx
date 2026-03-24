@@ -21,7 +21,7 @@ const Register = () => {
     const user = useSelector(state => state.auth.user);
     useEffect(() => {
         if (user) {
-            navigate('/login');
+            navigate('/');
         }
     }, [user, navigate]);
     return (

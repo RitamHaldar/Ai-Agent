@@ -1,13 +1,23 @@
 import { io } from "socket.io-client";
 
+let socketInstance = null;
+
 export function initializeSocket() {
-    const socket = io("https://axion-ai-h2ll.onrender.com", {
-        withCredentials: true
-    });
-    socket.on("connect", () => {
-        console.log("Connected to server");
-    });
-    socket.on("disconnect", () => {
-        console.log("Disconnected from server");
-    });
+    if (!socketInstance) {
+        socketInstance = io("https://axion-ai-h2ll.onrender.com", {
+            withCredentials: true
+        });
+
+        socketInstance.on("connect", () => {
+            console.log("Connected to server");
+        });
+
+        socketInstance.on("disconnect", () => {
+            console.log("Disconnected from server");
+        });
+    }
+}
+
+export function getSocket() {
+    return socketInstance;
 }

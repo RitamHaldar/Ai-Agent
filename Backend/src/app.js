@@ -18,5 +18,5 @@ app.use(cors({
  */
 app.use("/api/auth", authroute);
 app.use("/api/chat", chatroute);
-app.use(express.static("./Public"))
+// app.use(express.static("./Public"))
 export default app;

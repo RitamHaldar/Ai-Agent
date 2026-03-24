@@ -268,3 +268,26 @@
 .markdown-content p:last-child {
     margin-bottom: 0;
 }
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 15px;
+    background-color: #fff;
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.8s infinite;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}

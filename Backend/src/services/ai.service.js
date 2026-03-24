@@ -3,9 +3,27 @@ import { SystemMessage, HumanMessage, AIMessage, tool, createAgent } from "langc
 import * as z from "zod"
 import { webSearch } from "./websearch.service.js"
 
+
+export async function registerIO(io) {
+    io.on("connection", (socket) => {
+        console.log("User connected", socket.id);
+
+        socket.on("message", async (message) => {
+            console.log("Message from user", message);
+            socket.emit("message", "Message from server");
+        })
+        socket.on("disconnect", () => {
+            console.log("User disconnected", socket.id);
+        })
+    })
+}
+
+
+
 /**
  * @description Web Search Tool
  */
+
 
 const websearchtool = tool(
     webSearch,
@@ -38,25 +56,57 @@ const agent = createAgent({
  * @returns {Promise<string>}
  */
 
-export async function generateResponse(messages) {
-    const response = await agent.invoke({
+/**
+ * @description Stream Response
+
+ * @param {Array<Object>} messages
+ * @param {Function} onChunk
+ * @returns {Promise<string>}
+ */
+
+export async function streamResponse(messages, onChunk) {
+    const stream = await agent.stream({
         messages: [
             new SystemMessage(`
                 You are a helpful and precise assistant for answering questions.
                 If you don't know the answer, say you don't know. 
-                If the question requires up-to-date information with latest date or latest information then only use the "searchInternet" tool to get the latest information from the internet and then answer based on the search results.
+                If the question requires up-to-date information then only use the "websearch" tool and then answer based on the search results.
             `),
-            ...messages.map((message) => {
-                if (message.role === "user") {
-                    return new HumanMessage(message.content)
-                } else {
-                    return new AIMessage(message.content)
-                }
+            ...messages.map((m) => {
+                if (m.role === "user") return new HumanMessage(m.content);
+                return new AIMessage(m.content);
             })
         ]
-    });
-    return response.messages[response.messages.length - 1].text;
+    },
+        {
+            streamMode: "updates",
+            callbacks: [
+                {
+                    handleLLMNewToken(token) {
+                        if (onChunk) onChunk(token);
+                    }
+                }
+            ]
+        });
+
+    let fullResponse = "";
+    for await (const chunk of stream) {
+        const nodeOutput = chunk.agent || chunk.generate || Object.values(chunk)[0];
+        const msg = nodeOutput?.messages?.[nodeOutput.messages.length - 1];
+
+        if (msg && (msg._getType && msg._getType() === "ai" || msg.role === "ai")) {
+            const content = msg.content;
+            if (content) {
+                fullResponse = content;
+            }
+        }
+    }
+    return fullResponse;
 }
+
+
+
+
 
 /**
  * @description Generate Title

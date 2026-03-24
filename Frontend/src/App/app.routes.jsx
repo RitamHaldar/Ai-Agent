@@ -4,7 +4,6 @@ import Register from "../Features/Auth/Pages/Register";
 import Verify from "../Features/Auth/Pages/Verify";
 import Protected from "../Features/Auth/Components/Protected";
 import Dashboard from "../Features/Chat/Pages/Dashboard";
-
 export const routes = createBrowserRouter([
     {
         path: '/login',
@@ -21,5 +20,5 @@ export const routes = createBrowserRouter([
     {
         path: "/",
         element: <Protected><Dashboard /></Protected>
-    }
+    },
 ])
