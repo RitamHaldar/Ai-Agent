@@ -95,7 +95,14 @@ export async function streamResponse(messages, onChunk) {
         const msg = nodeOutput?.messages?.[nodeOutput.messages.length - 1];
 
         if (msg && (msg._getType && msg._getType() === "ai" || msg.role === "ai")) {
-            const content = msg.content;
+            let content = msg.content;
+            if (Array.isArray(content)) {
+                content = content.map(item => {
+                    if (typeof item === 'string') return item;
+                    if (item && item.type === 'text') return item.text;
+                    return '';
+                }).join('');
+            }
             if (content) {
                 fullResponse = content;
             }
