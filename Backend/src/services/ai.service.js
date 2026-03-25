@@ -65,7 +65,8 @@ const agent = createAgent({
  */
 
 export async function streamResponse(messages, onChunk) {
-    const stream = await agent.stream({
+    let buffer = "";
+    const response = await agent.invoke({
         messages: [
             new SystemMessage(`
                 You are a helpful and precise assistant for answering questions.
@@ -79,36 +80,27 @@ export async function streamResponse(messages, onChunk) {
         ]
     },
         {
-            streamMode: "updates",
+            stream: true,
             callbacks: [
                 {
                     handleLLMNewToken(token) {
-                        if (onChunk) onChunk(token);
+                        buffer += token;
+                        if (buffer.length > 35) {
+                            if (onChunk) onChunk(buffer);
+                            buffer = "";
+                        }
+                    },
+                    handleLLMEnd() {
+                        if (buffer.length > 0) {
+                            if (onChunk) onChunk(buffer);
+                            buffer = "";
+                        }
                     }
                 }
             ]
         });
 
-    let fullResponse = "";
-    for await (const chunk of stream) {
-        const nodeOutput = chunk.agent || chunk.generate || Object.values(chunk)[0];
-        const msg = nodeOutput?.messages?.[nodeOutput.messages.length - 1];
-
-        if (msg && (msg._getType && msg._getType() === "ai" || msg.role === "ai")) {
-            let content = msg.content;
-            if (Array.isArray(content)) {
-                content = content.map(item => {
-                    if (typeof item === 'string') return item;
-                    if (item && item.type === 'text') return item.text;
-                    return '';
-                }).join('');
-            }
-            if (content) {
-                fullResponse = content;
-            }
-        }
-    }
-    return fullResponse;
+    return response.messages[response.messages.length - 1].text;
 }
 
 

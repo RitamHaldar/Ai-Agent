@@ -32,8 +32,7 @@ export async function chatController(req, res) {
         })
     }
     const currentChatId = chatId || chat._id;
-
-    const userMessage = await messageModel.create({
+    await messageModel.create({
         chat: currentChatId,
         role: "user",
         content: pdfcontent ? message + "\n\n" + pdfcontent : message

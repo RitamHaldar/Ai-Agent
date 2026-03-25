@@ -72,7 +72,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                                         ? 'bg-white/10 border border-white/20 text-white shadow-[0_10px_30px_rgba(255,255,255,0.05)] rounded-tr-none'
                                         : 'bg-white/[0.03] border border-white/10 text-gray-100 backdrop-blur-md rounded-tl-none hover:bg-white/[0.05] transition-colors'}
                                     `}>
-                                    <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full break-words overflow-hidden">
+                                    <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full overflow-hidden">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                             {msg.message}
                                         </ReactMarkdown>
@@ -95,8 +95,8 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                     <div className="flex w-full justify-start animate-[fadeIn_0.3s_ease-out]">
                         <div className="flex items-start max-w-[85%] lg:max-w-[72%] flex-row">
                             <div className="space-y-4 pt-1">
-                                <div className="px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl bg-white/[0.03] border border-white/10 text-gray-100 backdrop-blur-md rounded-tl-none hover:bg-white/[0.05] transition-colors w-fit max-w-full break-words overflow-hidden">
-                                    <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full break-words overflow-hidden">
+                                <div className="px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl bg-white/[0.03] border border-white/10 text-gray-100 backdrop-blur-md rounded-tl-none hover:bg-white/[0.05] transition-colors w-fit max-w-full overflow-hidden">
+                                    <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full overflow-hidden">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                             {streamingMessage}
                                         </ReactMarkdown>

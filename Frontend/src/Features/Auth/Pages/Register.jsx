@@ -16,7 +16,7 @@ const Register = () => {
         setusername('');
         setEmail('');
         setPassword('');
-        navigate('/verify');
+        navigate('/');
     };
     const user = useSelector(state => state.auth.user);
     useEffect(() => {
