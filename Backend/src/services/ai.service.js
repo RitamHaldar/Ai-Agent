@@ -85,7 +85,7 @@ export async function streamResponse(messages, onChunk) {
                 {
                     handleLLMNewToken(token) {
                         buffer += token;
-                        if (buffer.length > 35) {
+                        if (buffer.length > 60) {
                             if (onChunk) onChunk(buffer);
                             buffer = "";
                         }
