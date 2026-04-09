@@ -23,15 +23,16 @@ const useChat = () => {
 
     const handlesendMessage = async ({ message, chatId, file, socketId }) => {
         try {
+            const fileType = file ? (file.type.includes('pdf') ? 'pdf' : 'image') : null;
             if (chatId) {
-                dispatch(addMessage({ chatId, message, role: "user" }))
+                dispatch(addMessage({ chatId, message, role: "user", hasFile: fileType }))
             }
             dispatch(setloading(true))
             const response = await createChat({ message, chatId, file, socketId })
 
             if (!chatId) {
                 dispatch(addnewchat({ chatId: response.data.chatId, title: response.data.title }))
-                dispatch(addMessage({ chatId: response.data.chatId, message: message, role: "user" }))
+                dispatch(addMessage({ chatId: response.data.chatId, message: message, role: "user", hasFile: fileType }))
             }
             dispatch(addMessage({ chatId: response.data.chatId || chatId, message: response.data.aiMessage.content, role: "ai" }))
             return response

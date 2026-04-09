@@ -14,6 +14,10 @@ const messageSchema = new mongoose.Schema({
         type: String,
         enum: ["user", "ai"],
         reuired: [true, "Role is required "]
+    },
+    additionalContent: {
+        type: String,
+        select: false
     }
 }, { timestamps: true })
 

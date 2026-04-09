@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { CloudHail } from "lucide-react";
 
 /**
  * 
@@ -30,16 +29,21 @@ const chatSlice = createSlice({
             };
         },
         addMessage: (state, action) => {
-            const { chatId, message, role } = action.payload;
-            state.messages[chatId].messages.push({ message, role });
+            const { chatId, message, role, hasFile } = action.payload;
+            state.messages[chatId].messages.push({ message, role, hasFile });
         },
         setmessages: (state, action) => {
             const { chatId, messages } = action.payload;
-            if (!messages) {
-                delete state.messages[chatId];
-                return;
-            }
-            state.messages[chatId].messages.push(...messages);
+            if (!state.messages[chatId]) return;
+            state.messages[chatId].messages = messages;
+        },
+        clearOtherMessages: (state, action) => {
+            const chatId = action.payload;
+            Object.keys(state.messages).forEach((id) => {
+                if (id !== chatId) {
+                    state.messages[id].messages = [];
+                }
+            });
         },
         setchats: (state, action) => {
             state.messages = action.payload;
@@ -56,5 +60,5 @@ const chatSlice = createSlice({
     }
 })
 
-export const { addMessage, setloading, seterror, setchats, setcurrentChatId, setmessages, addnewchat } = chatSlice.actions;
+export const { addMessage, setloading, seterror, setchats, setcurrentChatId, setmessages, addnewchat, clearOtherMessages } = chatSlice.actions;
 export default chatSlice.reducer;

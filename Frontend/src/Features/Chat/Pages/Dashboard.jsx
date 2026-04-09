@@ -4,9 +4,10 @@ import ChatWindow from '../Components/Chatwindow';
 import useChat from '../Hooks/useChat';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializeSocket, getSocket } from '../Services/chat.socket';
-import { setcurrentChatId } from '../chat.slice';
+import { setcurrentChatId, clearOtherMessages, setmessages } from '../chat.slice';
 import { useAuth } from '../../Auth/Hooks/useAuth';
 import { useNavigate } from 'react-router';
+import ReactMarkdown from 'react-markdown';
 
 const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -59,25 +60,27 @@ const Dashboard = () => {
 
     function openChat(chat) {
         dispatch(setcurrentChatId(chat.Id));
+        dispatch(clearOtherMessages(chat.Id));
         handleGetMessages(chat.Id);
     }
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
     async function sendmessage() {
         const message = searchQuery;
+        const file = fileref.current.files[0];
         setSearchQuery("");
+        setFilepresent(null);
+        if (fileref.current) {
+            fileref.current.value = "";
+        }
         if (!currentChatId) {
             setTempUserMessage(message);
         }
         setNewChat(true);
         try {
             const socket = getSocket();
-            const chat = await handlesendMessage({ message, chatId: currentChatId || '', file: fileref.current.files[0], socketId: socket?.id });
+            const chat = await handlesendMessage({ message, chatId: currentChatId || '', file: file, socketId: socket?.id });
 
 
-            if (fileref?.current?.files) {
-                fileref.current.files = null;
-            }
-            setFilepresent(null);
             dispatch(setcurrentChatId(chat.data.chatId));
             if (chat.data.title) {
                 setCurrentChatTitle(chat.data.title);
@@ -152,7 +155,7 @@ const Dashboard = () => {
                                             text-[12px] transition-all duration-300 truncate block font-medium group-hover:translate-x-1 pr-3
                                             ${currentChatId == chat.Id ? 'text-white translate-x-1 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'text-gray-500 hover:text-white'}
                                         `}>
-                                            {chat.title}
+                                            <ReactMarkdown>{chat.title}</ReactMarkdown>
                                         </span>
                                     </div>
                                     <button

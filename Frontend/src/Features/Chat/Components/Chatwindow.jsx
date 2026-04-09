@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, FileText, Image as ImageIcon } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
 
@@ -65,7 +65,22 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                         className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-[fadeIn_0.5s_ease-out]`}
                     >
                         <div className={`flex items-start ${msg.role === 'user' ? 'max-w-[70%] lg:max-w-[60%] flex-row-reverse' : 'max-w-[85%] lg:max-w-[72%] flex-row'}`}>
-                            <div className="space-y-2 w-fit max-w-full overflow-hidden">
+                            <div className="space-y-2 w-fit max-w-full overflow-hidden flex flex-col items-end">
+                                {msg.role === 'user' && msg.hasFile && (
+                                    <div className="flex items-center gap-2 mb-1 px-2 py-1 bg-white/[0.05] border border-white/10 rounded-lg backdrop-blur-md animate-[fadeIn_0.3s_ease-out]">
+                                        {msg.hasFile === 'pdf' ? (
+                                            <>
+                                                <FileText size={16} className="text-blue-400" />
+                                                <span className="text-[11px] font-bold text-blue-400/80 uppercase tracking-wider">PDF</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ImageIcon size={16} className="text-purple-400" />
+                                                <span className="text-[11px] font-bold text-purple-400/80 uppercase tracking-wider">Image</span>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                                 <div className={`
                                         px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl relative w-fit max-w-full overflow-hidden
                                         ${msg.role === 'user'

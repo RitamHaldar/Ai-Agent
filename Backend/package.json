@@ -15,6 +15,7 @@
   "dependencies": {
     "@imagekit/nodejs": "^7.3.0",
     "@langchain/google-genai": "^2.1.25",
+    "@langchain/groq": "^1.2.0",
     "@langchain/mistralai": "^1.0.7",
     "@mistralai/mistralai": "^2.1.2",
     "@tavily/core": "^0.7.2",

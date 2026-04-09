@@ -3,7 +3,6 @@ import { SystemMessage, HumanMessage, AIMessage, tool, createAgent } from "langc
 import * as z from "zod"
 import { webSearch } from "./websearch.service.js"
 
-
 export async function registerIO(io) {
     io.on("connection", (socket) => {
         console.log("User connected", socket.id);
@@ -74,7 +73,7 @@ export async function streamResponse(messages, onChunk) {
                 If the question requires up-to-date information then only use the "websearch" tool and then answer based on the search results.
             `),
             ...messages.map((m) => {
-                if (m.role === "user") return new HumanMessage(m.content);
+                if (m.role === "user") return new HumanMessage(m.content + m.additionalContent);
                 return new AIMessage(m.content);
             })
         ]

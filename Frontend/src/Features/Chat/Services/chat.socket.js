@@ -4,7 +4,7 @@ let socketInstance = null;
 
 export function initializeSocket() {
     if (!socketInstance) {
-        socketInstance = io("https://axion-ai-h2ll.onrender.com", {
+        socketInstance = io("http://localhost:3000", {
             withCredentials: true
         });
 

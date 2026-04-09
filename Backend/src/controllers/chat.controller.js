@@ -2,7 +2,7 @@ import { chatModel } from "../models/chat.model.js"
 import { messageModel } from "../models/messages.model.js"
 import { streamResponse, generateTitle } from "../services/ai.service.js"
 import { uploadPDF } from "../services/pdfupload.service.js"
-import { readPDF } from "../services/pdfreading.service.js"
+import { readPDF, generateImageDescription } from "../services/filereading.service.js"
 import { getIO } from "../sockets/server.socket.js"
 
 
@@ -15,13 +15,21 @@ import { getIO } from "../sockets/server.socket.js"
 export async function chatController(req, res) {
     const { message, chatId, socketId } = req.body;
     const file = req.file ? req.file : null;
-    let chat = null, title = null, pdfcontent = null;
+    let chat = null, title = null, pdfcontent = null, imageDescription = null;
     if (file) {
-        try {
-            const pdfurl = await uploadPDF(file);
-            pdfcontent = await readPDF(pdfurl);
-        } catch (error) {
-            console.log(error)
+        if (file.mimetype === "application/pdf") {
+            try {
+                const pdfurl = await uploadPDF(file);
+                pdfcontent = await readPDF(pdfurl);
+            } catch (error) {
+                console.log(error)
+            }
+        } else if (file.mimetype.startsWith("image/")) {
+            try {
+                imageDescription = await generateImageDescription(file.buffer);
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
     if (!chatId) {
@@ -35,13 +43,13 @@ export async function chatController(req, res) {
     await messageModel.create({
         chat: currentChatId,
         role: "user",
-        content: pdfcontent ? message + "\n\n" + pdfcontent : message
+        content: message,
+        additionalContent: pdfcontent || imageDescription || ""
     })
 
     const messages = await messageModel.find({
         chat: currentChatId
-    }).sort({ createdAt: 1 });
-
+    }).sort({ createdAt: 1 }).select("+additionalContent");
     const io = getIO();
 
     const responseContent = await streamResponse(messages, (chunk) => {
