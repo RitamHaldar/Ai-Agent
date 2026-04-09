@@ -1,8 +1,8 @@
 import { useRef, useEffect } from 'react';
 import { Menu } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { useSelector } from 'react-redux';
+import MarkdownRenderer from './markdown/MarkdownRenderer';
+
 const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, streamingMessage }) => {
     const chats = messages?.messages || [];
     const loading = useSelector((state) => state.chat.loading);
@@ -73,9 +73,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                                         : 'bg-white/[0.03] border border-white/10 text-gray-100 backdrop-blur-md rounded-tl-none hover:bg-white/[0.05] transition-colors'}
                                     `}>
                                     <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full overflow-hidden">
-                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {msg.message}
-                                        </ReactMarkdown>
+                                        <MarkdownRenderer content={msg.message} />
                                     </div>
                                 </div>
                             </div>
@@ -97,9 +95,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                             <div className="space-y-4 pt-1">
                                 <div className="px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl bg-white/[0.03] border border-white/10 text-gray-100 backdrop-blur-md rounded-tl-none hover:bg-white/[0.05] transition-colors w-fit max-w-full overflow-hidden">
                                     <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full overflow-hidden">
-                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {streamingMessage}
-                                        </ReactMarkdown>
+                                        <MarkdownRenderer content={streamingMessage} />
                                         <span className="typing-cursor"></span>
                                     </div>
                                 </div>
@@ -107,6 +103,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                         </div>
                     </div>
                 )}
+
 
 
                 {(loading && !streamingMessage) && (

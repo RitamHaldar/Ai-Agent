@@ -41,7 +41,7 @@ const websearchtool = tool(
  */
 
 const model = new ChatMistralAI({
-    model: "mistral-small-latest",
+    model: "mistral-medium-latest",
     apiKey: process.env.MISTRAL_API_KEY
 })
 
