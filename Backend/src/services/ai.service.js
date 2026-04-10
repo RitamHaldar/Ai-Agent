@@ -114,8 +114,9 @@ export async function streamResponse(messages, onChunk) {
 
 export async function generateTitle(message) {
     const response = await model.invoke([
-        new SystemMessage("You are a title generator. Generate a title for the given message. Return only the title. 2-4 words. The title must be catchy and relevant to the prompt."),
+        new SystemMessage("You are a title generator. Generate a title for the given message. Return only the title. 2-4 words. The title must be catchy and relevant to the prompt give plain text no quotes or special characters like \" \' \*."),
         new HumanMessage(`Generate a title for a chat conversation based on the following first message: : ${message}`)
     ]);
-    return response.text;
+    const title = response.text.replace(/"/g, "").replace(/'/g, "").replace(/\*/g, "").trim();
+    return title;
 }

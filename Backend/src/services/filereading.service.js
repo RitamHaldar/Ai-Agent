@@ -3,12 +3,12 @@ import { ChatGroq } from "@langchain/groq";
 import { HumanMessage } from "@langchain/core/messages";
 /**
  * @description Read PDF Service
- * @param {string} pdfurl
+ * @param {Buffer} buffer
  * @returns {Promise<string>}
  */
 
-export async function readPDF(pdfurl) {
-    const parser = new PDFParse({ url: pdfurl });
+export async function readPDF(buffer) {
+    const parser = new PDFParse({ data: buffer });
 
     const result = await parser.getText();
     return `Here is the content of the pdf go through it thoroughly and answer the question correctly: ${result.text}`;

@@ -1,7 +1,6 @@
 import { chatModel } from "../models/chat.model.js"
 import { messageModel } from "../models/messages.model.js"
 import { streamResponse, generateTitle } from "../services/ai.service.js"
-import { uploadPDF } from "../services/pdfupload.service.js"
 import { readPDF, generateImageDescription } from "../services/filereading.service.js"
 import { getIO } from "../sockets/server.socket.js"
 
@@ -19,8 +18,7 @@ export async function chatController(req, res) {
     if (file) {
         if (file.mimetype === "application/pdf") {
             try {
-                const pdfurl = await uploadPDF(file);
-                pdfcontent = await readPDF(pdfurl);
+                pdfcontent = await readPDF(file.buffer);
             } catch (error) {
                 console.log(error)
             }
