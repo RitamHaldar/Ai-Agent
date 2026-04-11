@@ -39,7 +39,7 @@ export const useAuth = () => {
 
         }
         catch (err) {
-            dispatch(setErr(err.response?.data?.message || 'Login failed. Please try again.'));
+            dispatch(setErr(null));
         }
         finally {
             dispatch(setLoading(false))
