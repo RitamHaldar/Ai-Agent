@@ -1,6 +1,6 @@
 import { userModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-//import { sendmail } from "../services/mail.service.js";
+import { sendMail } from "../services/mail.service.js";
 import { redis } from "../config/cache.js";
 
 /**
@@ -24,7 +24,7 @@ export async function register(req, res) {
             err: "User exists"
         })
     }
-    const user = await userModel.create({ username, email, password, verified: true });
+    const user = await userModel.create({ username, email, password });
     const emailVerificationToken = jwt.sign({
         id: user._id,
         username: user.username
@@ -32,14 +32,14 @@ export async function register(req, res) {
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
     )
-    /** await sendmail({
-         to: email,
-         subject: "Welcome to Axion AI",
-         html: `
+    await sendMail({
+        to: email,
+        subject: "Welcome to Axion AI",
+        html: `
          <div style="background-color: #030305; padding: 40px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #FFFFFF; text-align: center;">
              <div style="max-width: 600px; margin: 0 auto; background-color: #0b0c10; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
                  <div style="margin-bottom: 24px;">
-                     <span style="font-size: 10px; font-weight: 900; letter-spacing: 0.4em; color: #888; text-transform: uppercase;">SentinelAI</span>
+                     <span style="font-size: 10px; font-weight: 900; letter-spacing: 0.4em; color: #888; text-transform: uppercase;">Axion AI</span>
                  </div>
                  <h1 style="font-size: 28px; font-weight: 300; margin-bottom: 16px; letter-spacing: -0.02em;">Welcome, <span style="font-weight: 600; font-style: italic;">${username}</span></h1>
                  <p style="font-size: 16px; color: rgba(255, 255, 255, 0.7); line-height: 1.6; margin-bottom: 32px;">We're excited to have you on board Axion AI. Please verify your email to start augmenting your intelligence.</p>
@@ -51,12 +51,12 @@ export async function register(req, res) {
                  
                  <p style="font-size: 12px; color: rgba(255, 255, 255, 0.4); margin-top: 40px;">If you did not create an account, please ignore this email.</p>
                  <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
-                     <p style="font-size: 13px; color: rgba(255, 255, 255, 0.6);">Best regards,<br><strong style="color: #FFFFFF;">The SentinelAI Team</strong></p>
+                     <p style="font-size: 13px; color: rgba(255, 255, 255, 0.6);">Best regards,<br><strong style="color: #FFFFFF;">The Axion AI Team</strong></p>
                  </div>
              </div>
          </div>
      `
-     })*/
+    })
     res.cookie("token", emailVerificationToken)
     res.status(201).json({
         message: "User created successfully",
@@ -169,13 +169,13 @@ export async function verifyemail(req, res) {
                 <h1 style="font-size: 24px; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.02em;">Verified Successfully</h1>
                 <p style="font-size: 15px; color: rgba(255, 255, 255, 0.6); line-height: 1.6; margin-bottom: 32px;">Hi ${user.username}, your account is now active. You can now access the full power of Axion AI.</p>
                 
-                <a href="https://axion-ai-h2ll.onrender.com/login" 
+                <a href="https://axion-ai-h2ll.onrender.com" 
                    style="display: block; background: linear-gradient(135deg, #FFFFFF 0%, #E5E7EB 50%, #D1D5DB 100%); color: #000000; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 10px 20px rgba(255,255,255,0.1);">
                     Go to Login
                 </a>
                 
                 <div style="margin-top: 40px; font-size: 12px; color: rgba(255, 255, 255, 0.3); letter-spacing: 0.1em; text-transform: uppercase;">
-                    SentinelAI • Architectural Insights
+                    Axion AI • Architectural Insights
                 </div>
             </div>
         </div>

@@ -10,14 +10,12 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [visible, setvisible] = useState(false);
+    const error = useSelector(state => state.auth.err);
     const { handlelogin } = useAuth();
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         await handlelogin({ email, password });
-        setEmail('');
-        setPassword('');
-        navigate('/');
     };
     const user = useSelector(state => state.auth.user);
     useEffect(() => {
@@ -57,6 +55,13 @@ const Login = () => {
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-white tracking-tight">Welcome Back</h2>
                         <p className="text-gray-400 mb-8 text-sm font-medium">Log in to your account to continue.</p>
+
+                        {error && (
+                            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-500 text-xs font-semibold animate-pulse">
+                                {error}
+                            </div>
+                        )}
+
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
                                 <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">{loginwithemail ? "Email Address" : "Username"}</label>

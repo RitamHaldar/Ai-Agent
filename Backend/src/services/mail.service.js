@@ -1,22 +1,35 @@
-/**import nodemailer from "nodemailer";
-import "dotenv/config"
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GOOGLE_USER,
-        pass: process.env.GOOGLE_APP_PASS
-    }
-})
-transporter.verify()
-    .then(() => { console.log("SMTP server is ready") })
-    .catch((err) => { console.log("SMTP server is not able to send mail", err) })
-export async function sendmail({ to, subject, html }) {
-    const data = {
-        from: process.env.GOOGLE_USER,
-        to,
-        subject,
-        html
+import { google } from "googleapis";
 
-    }
-    await transporter.sendMail(data)
-}*/
+const oAuth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+);
+oAuth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+})
+const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
+
+export const sendMail = async ({ to, subject, html }) => {
+    const message = [
+        "MIME-Version: 1.0",
+        "Content-Type: text/html; charset=utf-8",
+        `From: "Axion Ai" <${process.env.EMAIL_USER || "me"}>`,
+        `To: ${to}`,
+        `Subject: ${subject}`,
+        "",
+        html,
+    ].join("\r\n");
+
+    const encodedMessage = Buffer.from(message)
+        .toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
+
+    await gmail.users.messages.send({
+        userId: "me",
+        requestBody: {
+            raw: encodedMessage,
+        },
+    });
+}
+
