@@ -126,11 +126,22 @@
     border-radius: 0 12px 12px 0;
 }
 
+.markdown-content strong {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.markdown-content em {
+    font-style: italic;
+    opacity: 0.9;
+}
+
 .markdown-content hr {
     border: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
-    margin: 2rem 0;
+    margin: 2.5rem 0;
+    opacity: 0.5;
 }
 
 @keyframes thinking-line {

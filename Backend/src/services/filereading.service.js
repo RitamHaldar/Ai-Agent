@@ -11,7 +11,7 @@ export async function readPDF(buffer) {
     const parser = new PDFParse({ data: buffer });
 
     const result = await parser.getText();
-    return `Here is the content of the pdf go through it thoroughly and answer the question correctly: ${result.text}`;
+    return `Here is the content of the pdf go through it thoroughly and answer the question correctly: ${result.text.slice(0, 10000)}`;
 }
 
 
@@ -22,12 +22,11 @@ export async function generateImageDescription(buffer) {
     });
 
     const base64Image = buffer.toString("base64");
-    console.log("called")
     const message = new HumanMessage({
         content: [
             {
                 type: "text",
-                text: "describe this image.",
+                text: "describe this image with key details.",
             },
             {
                 type: "image_url",

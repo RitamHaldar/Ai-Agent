@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Menu, FileText, Image as ImageIcon, Share2, Download, Printer } from 'lucide-react';
+import { Menu, FileText, Image as ImageIcon, Share2, Download, Printer, Mail } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
 
@@ -7,8 +7,73 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
     const [showShareMenu, setShowShareMenu] = useState(false);
     const chats = messages?.messages || [];
     const loading = useSelector((state) => state.chat.loading);
-    const scrollRef = useRef(null);
     const isAtBottom = useRef(true);
+    const scrollRef = useRef(null);
+
+    const parseEmailDraft = (content) => {
+        if (!content || typeof content !== 'string') return null;
+        if (!content.includes('**Subject:**')) return null;
+
+        try {
+            const emailMatch = content.match(/\*\*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\*\*/);
+            const recipient = emailMatch ? emailMatch[1] : '';
+
+            const subjectMatch = content.match(/\*\*Subject:\*\*\s*(.*)/);
+            const subject = subjectMatch ? subjectMatch[1].trim() : '';
+
+            let body = '';
+            const subjectIndex = content.indexOf('**Subject:**');
+            if (subjectIndex !== -1) {
+                const lines = content.substring(subjectIndex).split('\n');
+                if (lines.length > 1) {
+                    body = lines.slice(1).join('\n').trim();
+                    body = body.replace(/^---\s*/, '').trim();
+                }
+            }
+
+            if (subject || recipient) {
+                return { recipient, subject, body };
+            }
+        } catch (e) {
+            return null;
+        }
+        return null;
+    };
+
+    const handleSendEmail = (emailData) => {
+        const { recipient, subject, body } = emailData;
+
+        // Utility to convert text to mathematical bold characters for "plain text formatting"
+        const formatForGmail = (text) => {
+            const boldChars = {
+                'a': '𝐚', 'b': '𝐛', 'c': '𝐜', 'd': '𝐝', 'e': '𝐞', 'f': '𝐟', 'g': '𝐠', 'h': '𝐡', 'i': '𝐢', 'j': '𝐣', 'k': '𝐤', 'l': '𝐥', 'm': '𝐦', 'n': '𝐧', 'o': '𝐨', 'p': '𝐩', 'q': '𝐪', 'r': '𝐫', 's': '𝐬', 't': '𝐭', 'u': '𝐮', 'v': '𝐯', 'w': '𝐰', 'x': '𝐱', 'y': '𝐲', 'z': '𝐳',
+                'A': '𝐀', 'B': '𝐁', 'C': '𝐂', 'D': '𝐃', 'E': '𝐄', 'F': '𝐅', 'G': '𝐆', 'H': '𝐇', 'I': '𝐈', 'J': '𝐉', 'K': '𝐊', 'L': '𝐋', 'M': '𝐌', 'N': '𝐍', 'O': '𝐎', 'P': '𝐏', 'Q': '𝐐', 'R': '𝐑', 'S': '𝐒', 'T': '𝐓', 'U': '𝐔', 'V': '𝐕', 'W': '𝐖', 'X': '𝐗', 'Y': '𝐘', 'Z': '𝐙',
+                '0': '𝟎', '1': '𝟏', '2': '𝟐', '3': '𝟑', '4': '𝟒', '5': '𝟓', '6': '𝟔', '7': '𝟕', '8': '𝟖', '9': '𝟗'
+            };
+
+            const toBold = (str) => str.split('').map(char => boldChars[char] || char).join('');
+
+            return text
+                // Convert Markdown headers (### Heading) to Unicode bold and remove hashes
+                .replace(/^#{1,6}\s*(.*)$/gm, (_, p1) => toBold(p1))
+                // Convert **bold** to Unicode bold and remove asterisks
+                .replace(/\*\*(.*?)\*\*/g, (_, p1) => toBold(p1))
+                // Clean up simple bullet points (convert - or * at start of line to •)
+                .replace(/^[\s]*[-*]\s+/gm, '• ')
+                // Clean up LaTeX markers \( \) and \[ \]
+                .replace(/\\\(|\\\)|\\\[|\\\]/g, '')
+                // Strip code block markers while preserving the content and indentation
+                .replace(/```\w*\n?([\s\S]*?)```/g, (_, p1) => p1.trim())
+                // Clean up trailing/leading whitespace from the final result
+                .trim();
+        };
+
+        const formattedSubject = formatForGmail(subject);
+        const formattedBody = formatForGmail(body);
+
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(formattedSubject)}&body=${encodeURIComponent(formattedBody)}`;
+        window.open(gmailUrl, '_blank');
+    };
 
     const handleScroll = () => {
         if (scrollRef.current) {
@@ -284,8 +349,8 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                         key={idx}
                         className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-[fadeIn_0.5s_ease-out]`}
                     >
-                        <div className={`flex items-start ${msg.role === 'user' ? 'max-w-[70%] lg:max-w-[60%] flex-row-reverse' : 'max-w-[85%] lg:max-w-[72%] flex-row'}`}>
-                            <div className="space-y-2 w-fit max-w-full overflow-hidden flex flex-col items-end">
+                        <div className={`flex items-start ${msg.role === 'user' ? 'max-w-[85%] lg:max-w-[75%] flex-row-reverse' : 'max-w-[95%] lg:max-w-[90%] flex-row'}`}>
+                            <div className={`space-y-2 w-fit max-w-full overflow-hidden flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                 {msg.role === 'user' && msg.hasFile && (
                                     <div className="flex items-center gap-2 mb-1 px-2 py-1 bg-white/[0.05] border border-white/10 rounded-lg backdrop-blur-md animate-[fadeIn_0.3s_ease-out]">
                                         {msg.hasFile === 'pdf' ? (
@@ -300,6 +365,20 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                                             </>
                                         )}
                                     </div>
+                                )}
+                                {msg.role === 'ai' && (
+                                    (() => {
+                                        const emailData = parseEmailDraft(msg.message);
+                                        return emailData ? (
+                                            <button
+                                                onClick={() => handleSendEmail(emailData)}
+                                                className="flex items-center gap-2 mb-2 px-3 py-1.5 bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-lg hover:bg-[var(--accent)]/25 transition-all text-[11px] font-bold text-[var(--accent)] uppercase tracking-wider group animate-[fadeIn_0.3s_ease-out] backdrop-blur-md shadow-lg"
+                                            >
+                                                <Mail size={14} className="group-hover:scale-110 transition-transform" />
+                                                <span>Send via Gmail</span>
+                                            </button>
+                                        ) : null;
+                                    })()
                                 )}
                                 <div className={`
                                         px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl relative w-fit max-w-full overflow-hidden
@@ -317,7 +396,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                 ))}
                 {tempUserMessage && (
                     <div className="flex w-full justify-end animate-[fadeIn_0.3s_ease-out]">
-                        <div className="flex items-start max-w-[70%] lg:max-w-[60%] flex-row-reverse">
+                        <div className="flex items-start max-w-[85%] lg:max-w-[75%] flex-row-reverse">
                             <div className="px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl bg-[var(--accent)]/10 border border-[var(--border-strong)] text-[var(--text-primary)] shadow-[0_10px_30px_rgba(0,0,0,0.05)] rounded-tr-none w-fit max-w-full break-words overflow-hidden">
                                 <p className="text-[13px] lg:text-[15px] font-medium">{tempUserMessage}</p>
                             </div>
@@ -326,7 +405,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
                 )}
                 {streamingMessage && (
                     <div className="flex w-full justify-start animate-[fadeIn_0.3s_ease-out]">
-                        <div className="flex items-start max-w-[85%] lg:max-w-[72%] flex-row">
+                        <div className="flex items-start max-w-[95%] lg:max-w-[90%] flex-row">
                             <div className="space-y-4 pt-1">
                                 <div className="px-5 py-3 lg:px-8 lg:py-5 rounded-2xl lg:rounded-3xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] backdrop-blur-md rounded-tl-none hover:bg-[var(--accent)]/[0.05] transition-colors w-fit max-w-full overflow-hidden">
                                     <div className="text-[13px] lg:text-[15px] leading-relaxed font-medium markdown-content w-fit max-w-full overflow-hidden">
@@ -343,7 +422,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
 
                 {(loading && !streamingMessage) && (
                     <div className="flex w-full justify-start animate-[fadeIn_0.5s_ease-out]">
-                        <div className="flex items-start max-w-[85%] lg:max-w-[72%] flex-row">
+                        <div className="flex items-start max-w-[95%] lg:max-w-[90%] flex-row">
                             <div className="space-y-4 pt-1 overflow-hidden">
                                 <div className="flex items-center gap-2 px-1">
                                     <span className="text-[11px] font-bold text-[var(--text-primary)] uppercase tracking-wider opacity-90">Thinking</span>

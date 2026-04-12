@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Plus, ArrowRight, User, LogOut, Sparkles, Menu, X, Trash2, Mic, MicOff, Sun, Moon, Mail } from 'lucide-react';
+import { Home, Plus, ArrowRight, User, LogOut, Sparkles, Menu, X, Trash2, Mic, MicOff, Sun, Moon } from 'lucide-react';
 import ChatWindow from '../Components/Chatwindow';
 import useChat from '../Hooks/useChat';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,6 @@ import { setcurrentChatId, clearOtherMessages, setmessages } from '../chat.slice
 import { useAuth } from '../../Auth/Hooks/useAuth';
 import { useNavigate } from 'react-router';
 import ReactMarkdown from 'react-markdown';
-import { api } from '../Services/chat.api';
 
 
 
@@ -178,7 +177,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div 
+        <div
             className="flex h-screen bg-[var(--bg-main)] text-[var(--text-primary)] font-sans overflow-hidden relative transition-colors duration-500"
             style={isDarkMode ? themes.dark : themes.light}
         >
@@ -222,16 +221,8 @@ const Dashboard = () => {
                             <Home size={16} className={`${!currentChatId ? '' : 'group-hover:scale-110'} transition-transform`} />
                             <span className="text-[13px] font-bold tracking-wide">Home</span>
                         </button>
-                        <button 
-                            onClick={() => window.location.href = `${api.defaults.baseURL}/api/email`}
-                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all group cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
-                        >
-                            <Mail size={16} className="group-hover:scale-110 transition-transform" />
-                            <span className="text-[13px] font-bold tracking-wide">Connect Gmail to Send Mails</span>
-                        </button>
-
-
                     </nav>
+
                     <div className="mt-10 px-8">
                         <h2 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.25em] mb-5 flex items-center gap-2">
                             RECENT <span className="flex-1 h-[1px] bg-white/5"></span>
@@ -437,11 +428,10 @@ const Dashboard = () => {
                                             setGeneratingNewChat(true);
                                         }
                                     }}
-                                    className={`w-9 h-9 lg:w-10 lg:h-10 rounded-xl lg:rounded-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-[1.05] active:scale-95 shadow-[0_5px_15px_var(--accent-glow)] group/btn relative overflow-hidden shrink-0 ${
-                                        isDarkMode 
-                                        ? 'bg-gradient-to-br from-[var(--accent)] via-[var(--text-primary)] to-[var(--text-secondary)]' 
+                                    className={`w-9 h-9 lg:w-10 lg:h-10 rounded-xl lg:rounded-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-[1.05] active:scale-95 shadow-[0_5px_15px_var(--accent-glow)] group/btn relative overflow-hidden shrink-0 ${isDarkMode
+                                        ? 'bg-gradient-to-br from-[var(--accent)] via-[var(--text-primary)] to-[var(--text-secondary)]'
                                         : 'bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:bg-[var(--bg-card)]'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="absolute inset-0 bg-white/40 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 block"></div>
                                     <ArrowRight size={18} strokeWidth={3} className={`relative z-10 ${isDarkMode ? 'text-black' : 'text-[var(--accent)]'}`} />

@@ -3,7 +3,6 @@ import { messageModel } from "../models/messages.model.js"
 import { streamResponse, generateTitle } from "../services/ai.service.js"
 import { readPDF, generateImageDescription } from "../services/filereading.service.js"
 import { getIO } from "../sockets/server.socket.js"
-import { emailModel } from "../models/email.model.js"
 /**
  * @description Chat Controller
  * @route POST /api/chat
@@ -12,10 +11,9 @@ import { emailModel } from "../models/email.model.js"
 
 export async function chatController(req, res) {
     const { message, chatId, socketId } = req.body;
-    const file = req.file ? req.file : null;
-    const emailuser = await emailModel.findOne({ user: req.user.id });
+    const file = req.file ? req.file : null;;
 
-    
+
     let chat = null, title = null, pdfcontent = null, imageDescription = null;
     if (file) {
         if (file.mimetype === "application/pdf") {
@@ -56,7 +54,7 @@ export async function chatController(req, res) {
         if (socketId) {
             io.to(socketId).emit("message", chunk);
         }
-    }, emailuser?.refreshToken);
+    });
 
 
 
