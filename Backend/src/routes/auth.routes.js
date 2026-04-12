@@ -1,8 +1,8 @@
 import express from "express"
 import { registerValidator, loginValidator } from "../validator/auth.validator.js";
-import { register, login, getme, verifyemail, logout } from "../controllers/auth.controller.js";
+import { register, login, getme, verifyemail, logout, googleLogin } from "../controllers/auth.controller.js";
 import { Identifyuser } from "../middlewares/auth.middleware.js";
-
+import passport from "passport";
 const authroute = express.Router();
 /**
  * @description register user
@@ -41,5 +41,19 @@ authroute.get("/verify-email", verifyemail);
  */
 
 authroute.get("/logout", Identifyuser, logout);
+
+/**
+ * @description google login
+ * @route GET /api/auth/google
+ * @access public
+ */
+
+authroute.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+/**
+ * @description google callback
+ * @route GET /api/auth/google/callback
+ * @access public
+ */
+authroute.get("/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/login" }), googleLogin);
 
 export default authroute

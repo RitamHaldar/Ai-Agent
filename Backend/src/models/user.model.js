@@ -13,13 +13,18 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, "Password is required"],
+        required: function () {
+            return !this.googleId;
+        },
         select: false
     },
     verified: {
         type: Boolean,
         required: [true, "Verified is required "],
         default: false
+    },
+    googleId: {
+        type: String
     }
 }, { timestamps: true })
 userSchema.pre("save", async function () {

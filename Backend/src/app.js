@@ -3,7 +3,8 @@ import cookieParser from "cookie-parser";
 import authroute from "./routes/auth.routes.js"
 import chatroute from "./routes/chats.routes.js"
 import cors from "cors"
-
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 const app = express();
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
@@ -12,7 +13,15 @@ app.use(cors({
     origin: "https://axion-ai-h2ll.onrender.com",
     credentials: true
 }))
-
+app.use(passport.initialize());
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/api/auth/google/callback",
+    scope: ["profile", "email"]
+}, (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+}));
 /**
  * @description Routes
  */

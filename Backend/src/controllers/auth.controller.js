@@ -210,3 +210,42 @@ export async function logout(req, res) {
         success: true
     })
 }
+
+export async function googleLogin(req, res) {
+    try {
+        const { id, displayName, emails } = req.user;
+        let user = await userModel.findOne({ email: emails[0].value });
+        if (!user) {
+            user = await userModel.create({
+                username: displayName,
+                email: emails[0].value,
+                verified: true,
+                googleId: id
+            });
+        }
+        const token = jwt.sign({
+            id: user._id,
+            username: user.username
+        },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" })
+        res.cookie("token", token);
+        res.redirect("/");
+        res.status(200).json({
+            message: "User logged in successfully",
+            success: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                user: user.username,
+            }
+        })
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false,
+            err: "Internal server error"
+        })
+    }
+}
