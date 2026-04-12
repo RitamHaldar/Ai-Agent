@@ -2,6 +2,7 @@ import { ChatMistralAI } from "@langchain/mistralai"
 import { SystemMessage, HumanMessage, AIMessage, tool, createAgent } from "langchain"
 import * as z from "zod"
 import { webSearch } from "./websearch.service.js"
+import { sendEmail } from "./autosend.service.js"
 
 export async function registerIO(io) {
     io.on("connection", (socket) => {
@@ -34,26 +35,15 @@ const websearchtool = tool(
         })
     }
 )
-
 /**
  * @description Mistral AI Model
  */
-
 const model = new ChatMistralAI({
     model: "mistral-medium-latest",
     apiKey: process.env.MISTRAL_API_KEY
 })
 
-const agent = createAgent({
-    model,
-    tools: [websearchtool]
-})
 
-/**
- * @description Generate Response
- * @param {Array<Object>} messages
- * @returns {Promise<string>}
- */
 
 /**
  * @description Stream Response
@@ -63,7 +53,25 @@ const agent = createAgent({
  * @returns {Promise<string>}
  */
 
-export async function streamResponse(messages, onChunk) {
+export async function streamResponse(messages, onChunk, refreshToken) {
+    const emailTool = tool(
+        (args) => sendEmail({ ...args, refreshToken }),
+        {
+            name: "sendEmail",
+            description: "Use this tool to send an email to the user.",
+            schema: z.object({
+                to: z.string().describe("The email address to send the email to"),
+                subject: z.string().describe("The subject of the email"),
+                html: z.string().describe("The HTML content of the email")
+            })
+        }
+    )
+
+    const agent = createAgent({
+        model,
+        tools: [websearchtool, emailTool]
+    })
+
     let buffer = "";
     const response = await agent.invoke({
         messages: [
@@ -71,9 +79,13 @@ export async function streamResponse(messages, onChunk) {
                 You are a helpful and precise assistant for answering questions.
                 If you don't know the answer, say you don't know. 
                 If the question requires up-to-date information then only use the "websearch" tool and then answer based on the search results.
+                
+                Capability Status:
+                - Email: ${refreshToken ? "Authenticated. You CAN send emails using the 'sendEmail' tool." : "NOT Authenticated. If the user wants to send an email, tell them they must first link their Gmail account by clicking the 'Connect Gmail' button or visiting /api/email."}
             `),
+
             ...messages.map((m) => {
-                if (m.role === "user") return new HumanMessage(m.content + m.additionalContent);
+                if (m.role === "user") return new HumanMessage(m.content + (m.additionalContent || ""));
                 return new AIMessage(m.content);
             })
         ]
@@ -106,6 +118,7 @@ export async function streamResponse(messages, onChunk) {
 
 
 
+
 /**
  * @description Generate Title
  * @param {string} message
@@ -120,3 +133,4 @@ export async function generateTitle(message) {
     const title = response.text.replace(/"/g, "").replace(/'/g, "").replace(/\*/g, "").trim();
     return title;
 }
+

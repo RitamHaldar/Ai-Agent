@@ -4,10 +4,11 @@ import axios from "axios"
  * @description Axios Instance
  */
 
-const api = axios.create({
+export const api = axios.create({
     baseURL: "https://axion-ai-h2ll.onrender.com",
     withCredentials: true
 })
+
 
 /**
  * @description Create Chat

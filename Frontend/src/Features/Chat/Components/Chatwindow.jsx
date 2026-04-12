@@ -30,7 +30,9 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
         const chatContent = chats.map(msg => `
             <div class="message ${msg.role}">
                 <div class="role">${msg.role === 'user' ? 'You' : 'AI'}</div>
-                <div class="content">${(msg.message || msg.content || '').replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+                <div class="markdown-body" data-markdown="${encodeURIComponent(msg.message || msg.content || '')}">
+                    Loading content...
+                </div>
             </div>
         `).join('');
 
@@ -40,8 +42,10 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${chatTitle || 'Chat Export'} - AI Chat</title>
+    <title>${chatTitle || 'Chat Export'} - Axion AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
     <style>
         :root {
             --bg: #0b0c10;
@@ -50,7 +54,7 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
             --text-primary: #ffffff;
             --text-secondary: #c5c6c7;
             --ai-bubble: rgba(255, 255, 255, 0.03);
-            --user-bubble: rgba(255, 255, 255, 0.1);
+            --user-bubble: rgba(102, 252, 241, 0.05);
         }
         * { box-sizing: border-box; }
         body {
@@ -63,29 +67,30 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
             print-color-adjust: exact;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
         header {
             text-align: center;
             margin-bottom: 60px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 20px;
+            padding-bottom: 30px;
         }
-        h1 { font-size: 2rem; margin: 0; color: var(--accent); }
-        .timestamp { color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px; }
-        .chat-container { display: flex; flex-direction: column; gap: 24px; }
+        h1 { font-size: 2.5rem; margin: 0; color: var(--accent); font-weight: 700; letter-spacing: -0.02em; }
+        .timestamp { color: var(--text-secondary); font-size: 0.9rem; margin-top: 15px; font-weight: 500; opacity: 0.7; }
+        .chat-container { display: flex; flex-direction: column; gap: 32px; }
         .message {
-            max-width: 85%;
-            padding: 16px 24px;
-            border-radius: 20px;
+            max-width: 90%;
+            padding: 24px 32px;
+            border-radius: 24px;
             position: relative;
+            transition: all 0.3s ease;
         }
         .user {
             align-self: flex-end;
             background: var(--user-bubble);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(102, 252, 241, 0.2);
             border-bottom-right-radius: 4px;
         }
         .ai {
@@ -95,28 +100,49 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
             border-bottom-left-radius: 4px;
         }
         .role {
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 800;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 15px;
             color: var(--accent);
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
         }
-        .content { font-size: 1rem; white-space: pre-wrap; word-wrap: break-word; }
+        .markdown-body {
+            background-color: transparent !important;
+            color: var(--text-primary) !important;
+            font-size: 1rem !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .markdown-body pre {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 12px !important;
+        }
+        .markdown-body code {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: var(--accent) !important;
+            padding: 0.2em 0.4em !important;
+            border-radius: 6px !important;
+        }
+        .markdown-body table { border-collapse: collapse !important; width: 100% !important; margin: 1em 0 !important; }
+        .markdown-body th, .markdown-body td { border: 1px solid rgba(255, 255, 255, 0.1) !important; padding: 12px !important; }
+        .markdown-body th { background-color: rgba(255, 255, 255, 0.05) !important; }
+        
         footer {
-            margin-top: 80px;
+            margin-top: 100px;
             text-align: center;
             color: var(--text-secondary);
             font-size: 0.8rem;
-            opacity: 0.5;
+            opacity: 0.4;
+            letter-spacing: 0.05em;
         }
         @media print {
             body { background: #fff; color: #000; }
-            .user { background: #f0f0f0; border: 1px solid #ccc; color: #000; }
-            .ai { background: #fff; border: 1px solid #eee; color: #000; }
-            .role { color: #333; }
-            header { border-bottom: 1px solid #eee; }
-            h1 { color: #000; }
+            .user, .ai { background: #fff; border: 1px solid #ddd; color: #000; }
+            .role { color: #666; }
+            .markdown-body { color: #000 !important; }
+            .markdown-body pre { background: #f6f8fa !important; border: 1px solid #ddd !important; }
         }
     </style>
 </head>
@@ -124,18 +150,28 @@ const ChatWindow = ({ chatTitle, messages, tempUserMessage, onToggleSidebar, str
     <div class="container">
         <header>
             <h1>${chatTitle || 'Chat Export'}</h1>
-            <div class="timestamp">Exported on ${new Date().toLocaleDateString()}</div>
+            <div class="timestamp">Exported from Axion AI on ${new Date().toLocaleDateString()}</div>
         </header>
         <div class="chat-container">
             ${chatContent}
         </div>
         <footer>
-            Exported from AI Agent
+            PROCESSED BY AXION AI • ${new Date().getFullYear()}
         </footer>
+
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.markdown-body').forEach(el => {
+                const markdown = decodeURIComponent(el.getAttribute('data-markdown'));
+                el.innerHTML = marked.parse(markdown);
+            });
+        });
+    </script>
 </body>
 </html>`;
     };
+
 
     const exportToHTML = () => {
         const html = generateChatHTML();

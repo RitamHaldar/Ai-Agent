@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import authroute from "./routes/auth.routes.js"
 import chatroute from "./routes/chats.routes.js"
 import cors from "cors"
+import emailRouter from "./routes/email.routes.js"
 
 const app = express();
 app.use(express.urlencoded({ extended: true }))
@@ -18,5 +19,6 @@ app.use(cors({
  */
 app.use("/api/auth", authroute);
 app.use("/api/chat", chatroute);
+app.use("/api/email", emailRouter);
 app.use(express.static("./Public"))
 export default app;

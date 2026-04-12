@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, Plus, ArrowRight, User, LogOut, Sparkles, Menu, X, Trash2, Mic, MicOff, Sun, Moon } from 'lucide-react';
+import { Home, Plus, ArrowRight, User, LogOut, Sparkles, Menu, X, Trash2, Mic, MicOff, Sun, Moon, Mail } from 'lucide-react';
 import ChatWindow from '../Components/Chatwindow';
 import useChat from '../Hooks/useChat';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,9 @@ import { setcurrentChatId, clearOtherMessages, setmessages } from '../chat.slice
 import { useAuth } from '../../Auth/Hooks/useAuth';
 import { useNavigate } from 'react-router';
 import ReactMarkdown from 'react-markdown';
+import { api } from '../Services/chat.api';
+
+
 
 const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -219,6 +222,15 @@ const Dashboard = () => {
                             <Home size={16} className={`${!currentChatId ? '' : 'group-hover:scale-110'} transition-transform`} />
                             <span className="text-[13px] font-bold tracking-wide">Home</span>
                         </button>
+                        <button 
+                            onClick={() => window.location.href = `${api.defaults.baseURL}/api/email`}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all group cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
+                        >
+                            <Mail size={16} className="group-hover:scale-110 transition-transform" />
+                            <span className="text-[13px] font-bold tracking-wide">Connect Gmail to Send Mails</span>
+                        </button>
+
+
                     </nav>
                     <div className="mt-10 px-8">
                         <h2 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.25em] mb-5 flex items-center gap-2">
