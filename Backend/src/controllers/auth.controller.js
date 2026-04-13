@@ -230,16 +230,7 @@ export async function googleLogin(req, res) {
             process.env.JWT_SECRET,
             { expiresIn: "7d" })
         res.cookie("token", token);
-        res.redirect("/");
-        res.status(200).json({
-            message: "User logged in successfully",
-            success: true,
-            user: {
-                id: user.id,
-                email: user.email,
-                user: user.username,
-            }
-        })
+        return res.redirect("/");
     }
     catch (err) {
         return res.status(500).json({

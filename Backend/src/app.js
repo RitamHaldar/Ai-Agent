@@ -6,6 +6,7 @@ import cors from "cors"
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.json());
@@ -18,6 +19,7 @@ passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "/api/auth/google/callback",
+    proxy: true,
     scope: ["profile", "email"]
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
