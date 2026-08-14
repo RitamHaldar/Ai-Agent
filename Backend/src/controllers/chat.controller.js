@@ -1,7 +1,7 @@
 import { chatModel } from "../models/chat.model.js"
 import { messageModel } from "../models/messages.model.js"
 import { streamResponse, generateTitle } from "../services/ai.service.js"
-import { readPDF, generateImageDescription } from "../services/filereading.service.js"
+import { generateImageDescription, uploadToVectorDB } from "../services/filereading.service.js"
 import { getIO } from "../sockets/server.socket.js"
 /**
  * @description Chat Controller
@@ -14,11 +14,19 @@ export async function chatController(req, res) {
     const file = req.file ? req.file : null;;
 
 
-    let chat = null, title = null, pdfcontent = null, imageDescription = null;
+    let chat = null, title = null, imageDescription = null;
+    if (!chatId) {
+        title = await generateTitle(message)
+        chat = await chatModel.create({
+            user: req.user.id,
+            title
+        })
+    }
+    const currentChatId = chatId || chat._id;
     if (file) {
         if (file.mimetype === "application/pdf") {
             try {
-                pdfcontent = await readPDF(file.buffer);
+                await uploadToVectorDB(file.buffer,req.user.id,currentChatId)
             } catch (error) {
                 console.log(error)
             }
@@ -30,19 +38,11 @@ export async function chatController(req, res) {
             }
         }
     }
-    if (!chatId) {
-        title = await generateTitle(message)
-        chat = await chatModel.create({
-            user: req.user.id,
-            title
-        })
-    }
-    const currentChatId = chatId || chat._id;
     await messageModel.create({
         chat: currentChatId,
         role: "user",
         content: message,
-        additionalContent: pdfcontent || imageDescription || ""
+        additionalContent: imageDescription || ""
     })
 
     const messages = await messageModel.find({
@@ -54,7 +54,7 @@ export async function chatController(req, res) {
         if (socketId) {
             io.to(socketId).emit("message", chunk);
         }
-    });
+    },req.user.id,currentChatId);
 
 
 

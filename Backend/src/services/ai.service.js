@@ -1,7 +1,8 @@
-import { ChatMistralAI } from "@langchain/mistralai"
+import { ChatMistralAI, MistralAIEmbeddings } from "@langchain/mistralai"
 import { SystemMessage, HumanMessage, AIMessage, tool, createAgent } from "langchain"
 import * as z from "zod"
 import { webSearch } from "./websearch.service.js"
+import { AnsFromPdf } from "./filereading.service.js"
 
 export async function registerIO(io) {
     io.on("connection", (socket) => {
@@ -18,22 +19,6 @@ export async function registerIO(io) {
 }
 
 
-
-/**
- * @description Web Search Tool
- */
-
-
-const websearchtool = tool(
-    webSearch,
-    {
-        name: "websearch",
-        description: "Use this tool to get the latest information from the internet.",
-        schema: z.object({
-            query: z.string().describe("The query to search on the web")
-        })
-    }
-)
 /**
  * @description Mistral AI Model
  */
@@ -42,9 +27,11 @@ const model = new ChatMistralAI({
     apiKey: process.env.MISTRAL_API_KEY
 })
 
-const agent = createAgent({
-    model,
-    tools: [websearchtool]
+
+
+export const embedd = new MistralAIEmbeddings({
+    model: "mistral-embed",
+    apiKey: process.env.MISTRAL_API_KEY
 })
 
 /**
@@ -55,14 +42,39 @@ const agent = createAgent({
  * @returns {Promise<string>}
  */
 
-export async function streamResponse(messages, onChunk) {
+export async function streamResponse(messages, onChunk, userId,chatId) {
     let buffer = "";
+    const websearchtool = tool(
+        webSearch,
+        {
+            name: "websearch",
+            description: "Use this tool to get the latest information from the internet.",
+            schema: z.object({
+                query: z.string().describe("The query to search on the web")
+            })
+        }
+    )
+    const Pdfandtool = tool(
+        async ({query}) => await AnsFromPdf(query,userId,chatId),
+        {
+            name: "pdfcontentstool",
+            description: "Use this tool to get the information from the uploaded pdf files.",
+            schema: z.object({
+                query: z.string().describe("The query to search on the pdf content")
+            })
+        }
+    )
+    const agent = createAgent({
+        model,
+        tools: [websearchtool, Pdfandtool]
+    })
     const response = await agent.invoke({
         messages: [
             new SystemMessage(`
                 You are a helpful and precise assistant for answering questions.
-                If you don't know the answer, say you don't know. 
-                If the question requires up-to-date information then only use the "websearch" tool and then answer based on the search results.
+                If the user's question relates to uploaded documents, PDFs, or files, or if answering the question requires context from previously uploaded PDFs, ALWAYS use the "pdfcontentstool" tool first to search and retrieve information from the PDF content.
+                If the question requires up-to-date information from the internet, use the "websearch" tool and then answer based on the search results.
+                If you don't know the answer after checking the tools, say you don't know.
                 If the User asks about email writing, generate an email draft.
                 You MUST follow this exact structure for drafts:
                 "Here’s a professional and informative email draft about **[Topic]** that you can send to **[Email]**:
